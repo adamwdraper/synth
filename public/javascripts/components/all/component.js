@@ -12,34 +12,34 @@ define([
   var context = new (window.AudioContext || window.webkitAudioContext)();
   var oscillator = context.createOscillator();
   var gainNode = context.createGain();
+
   var View = Backbone.View.extend({
     template: template,
-    bindings: {},
-    listeners: {},
-    events: {
-      'click [data-start-stop]': 'toggleStartStop'
+    bindings: {
+      '[data-play]': 'isPlaying'
     },
-    initialize: function() {},
-    render: function() {
+    listeners: {},
+    events: {},
+    initialize: function() {
       this.states = new States();
-      this.listenTo(this.states, 'change:isPlaying', this.log);
+      this.listenTo(this.states, 'change:isPlaying', this.play);
 
       // create Oscillator node
       oscillator.type = 'sine';
-      oscillator.frequency.value = 2000; // value in hertz
+      oscillator.frequency.value = 1000; // value in hertz
 
       // connect oscillator to gain node to speakers
       oscillator.connect(gainNode);
       gainNode.connect(context.destination);
-
+    },
+    render: function() {
       this.$el.html(this.template());
+
+      this.stickit(this.states);
 
       return this;
     },
-    toggleStartStop: function() {
-      this.states.toggle('isPlaying');
-    },
-    log: function(model, value) {
+    play: function(model, value) {
       if (value) {
         oscillator.start(0);
       } else {
