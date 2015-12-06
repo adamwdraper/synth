@@ -6,9 +6,9 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './states',
+  './settings',
   'template!./template.html'
-], function($, _, Backbone, States, template) {
+], function($, _, Backbone, Settings, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
   var masterVolume = context.createGain();
   var oscillator;
@@ -17,28 +17,30 @@ define([
     template: template,
     bindings: {
       '[data-play]': 'isPlaying',
+      '[data-wave]': 'wave',
       '[data-volume]': 'volume'
     },
     listeners: {},
     events: {},
     initialize: function() {
-      this.states = new States();
-      this.listenTo(this.states, 'change:isPlaying', this.play);
-      this.listenTo(this.states, 'change:volume', this.updateVolume);
+      this.settings = new Settings();
+      this.listenTo(this.settings, 'change:isPlaying', this.updatePlay);
+      this.listenTo(this.settings, 'change:wave', this.updateWave);
+      this.listenTo(this.settings, 'change:volume', this.updateVolume);
 
       masterVolume.connect(context.destination);
     },
     render: function() {
       this.$el.html(this.template());
 
-      this.stickit(this.states);
+      this.stickit(this.settings);
 
       return this;
     },
-    play: function(model, value) {
+    updatePlay: function(model, value) {
       if (value) {
         oscillator = context.createOscillator();
-        oscillator.type = 'sine';
+        oscillator.type = this.settings.get('wave');
         oscillator.frequency.value = 1000; // value in hertz
         oscillator.connect(masterVolume);
 
@@ -46,6 +48,11 @@ define([
       } else {
         oscillator.stop();
       }
+
+      log(value);
+    },
+    updateWave: function(model, value) {
+      oscillator.type = value;
 
       log(value);
     },

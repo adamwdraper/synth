@@ -4,6 +4,7 @@ define([
   var Model = Backbone.Model.extend({
     defaults: {
       isPlaying: false,
+      wave: 'sine',
       volume: 0.5
     }
   });
