@@ -10,8 +10,8 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, States, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
-  var oscillator = context.createOscillator();
-  var gainNode = context.createGain();
+  var masterVolume = context.createGain();
+  var oscillator;
 
   var View = Backbone.View.extend({
     template: template,
@@ -24,13 +24,7 @@ define([
       this.states = new States();
       this.listenTo(this.states, 'change:isPlaying', this.play);
 
-      // create Oscillator node
-      oscillator.type = 'sine';
-      oscillator.frequency.value = 1000; // value in hertz
-
-      // connect oscillator to gain node to speakers
-      oscillator.connect(gainNode);
-      gainNode.connect(context.destination);
+      masterVolume.connect(context.destination);
     },
     render: function() {
       this.$el.html(this.template());
@@ -41,6 +35,11 @@ define([
     },
     play: function(model, value) {
       if (value) {
+        oscillator = context.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 1000; // value in hertz
+        oscillator.connect(masterVolume);
+
         oscillator.start(0);
       } else {
         oscillator.stop();
