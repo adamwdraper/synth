@@ -7,10 +7,11 @@ define([
   'underscore',
   'backbone',
   'plugins/oscillator/plugin',
+  'plugins/frequency-slider/plugin',
   'plugins/volume/plugin',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscillator, Volume, Settings, template) {
+], function($, _, Backbone, Oscillator, Frequency, Volume, Settings, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
 
   var View = Backbone.View.extend({
@@ -32,6 +33,11 @@ define([
         context: context
       }).render();
 
+      this.plugins.frequency = new Frequency({
+        el: this.$el.find('[data-frequency]')
+      }).render();
+      this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
+
       this.plugins.oscillator = new Oscillator({
         el: this.$el.find('[data-oscillator]'),
         context: context,
@@ -45,10 +51,13 @@ define([
     },
     updatePlaying: function() {
       if (this.settings.get('isPlaying')) {
-        this.plugins.oscillator.play();
+        this.plugins.oscillator.play(this.plugins.frequency.settings.get('frequency'));
       } else {
         this.plugins.oscillator.stop();
       }
+    },
+    setOscillatorFrequency: function(model, frequency) {
+      this.plugins.oscillator.set('frequency', frequency);
     }
   });
 

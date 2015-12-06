@@ -20,7 +20,8 @@ define([
     events: {},
     initialize: function() {
       this.settings = new Settings();
-      this.listenTo(this.settings, 'change:wave', this.updateWave);
+      this.listenTo(this.settings, 'change:wave', this.setWave);
+      this.listenTo(this.settings, 'change:frequency', this.setFrequency);
     },
     render: function() {
       this.$el.html(this.template());
@@ -33,7 +34,7 @@ define([
       if (this.settings.get('isActive')) {
         this.oscillator = this.data.context.createOscillator();
         this.oscillator.type = this.settings.get('wave');
-        this.oscillator.frequency.value = 1000;
+        this.oscillator.frequency.value = this.settings.get('frequency');
         this.oscillator.connect(this.data.volume);
         this.oscillator.start(0);
       }
@@ -45,12 +46,18 @@ define([
       
       this.oscillator = null;
     },
-    updateWave: function(model, value) {
+    set: function(attribute, value) {
+      this.settings.set(attribute, value);
+    },
+    setWave: function(model, type) {
       if (this.oscillator) {
-        this.oscillator.type = value;
+        this.oscillator.type = type;
       }
-
-      log(value);
+    },
+    setFrequency: function(model, frequency) {
+      if (this.oscillator) {
+        this.oscillator.frequency.value = frequency;
+      }
     }
   });
 
