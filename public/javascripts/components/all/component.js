@@ -7,17 +7,15 @@ define([
   'underscore',
   'backbone',
   'plugins/oscillator/plugin',
+  'plugins/volume/plugin',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscillator, Settings, template) {
+], function($, _, Backbone, Oscillator, Volume, Settings, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
-  var masterVolume = context.createGain();
 
   var View = Backbone.View.extend({
     template: template,
-    bindings: {
-      '[data-volume]': 'volume'
-    },
+    bindings: {},
     listeners: {},
     events: {
       'click [data-play]': 'togglePlaying'
@@ -25,20 +23,20 @@ define([
     initialize: function() {
       this.settings = new Settings();
       this.listenTo(this.settings, 'change:isPlaying', this.updatePlaying);
-      this.listenTo(this.settings, 'change:volume', this.updateVolume);
-
-      masterVolume.connect(context.destination);
     },
     render: function() {
       this.$el.html(this.template());
 
+      this.plugins.master = new Volume({
+        el: this.$el.find('[data-master]'),
+        context: context
+      }).render();
+
       this.plugins.oscillator = new Oscillator({
         el: this.$el.find('[data-oscillator]'),
         context: context,
-        volume: masterVolume
+        volume: this.plugins.master.volume
       }).render();
-
-      this.stickit(this.settings);
 
       return this;
     },
@@ -51,25 +49,6 @@ define([
       } else {
         this.plugins.oscillator.stop();
       }
-    },
-    updatePlay: function(model, value) {
-      if (value) {
-        oscillator = context.createOscillator();
-        oscillator.type = this.settings.get('wave');
-        oscillator.frequency.value = 1000;
-        oscillator.connect(masterVolume);
-
-        oscillator.start(0);
-      } else {
-        oscillator.stop();
-      }
-
-      log(value);
-    },
-    updateVolume: function(model, value) {
-      masterVolume.gain.value = value;
-
-      log(value);
     }
   });
 
