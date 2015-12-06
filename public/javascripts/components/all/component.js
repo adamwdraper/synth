@@ -16,6 +16,7 @@ define([
 
   var View = Backbone.View.extend({
     template: template,
+    oscillators: [],
     bindings: {},
     listeners: {},
     events: {
@@ -38,11 +39,16 @@ define([
       }).render();
       this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
 
-      this.plugins.oscillator = new Oscillator({
-        el: this.$el.find('[data-oscillator]'),
-        context: context,
-        volume: this.plugins.master.volume
-      }).render();
+      // render all oscillators
+      _.each(this.$el.find('[data-oscillator]'), function($oscillator) {
+        var oscillator = new Oscillator({
+          el: $oscillator,
+          context: context,
+          volume: this.plugins.master.volume
+        }).render();
+
+        this.oscillators.push(oscillator);
+      }, this);
 
       return this;
     },
@@ -51,13 +57,19 @@ define([
     },
     updatePlaying: function() {
       if (this.settings.get('isPlaying')) {
-        this.plugins.oscillator.play(this.plugins.frequency.settings.get('frequency'));
+        _.each(this.oscillators, function(oscillator) {
+          oscillator.play();
+        });
       } else {
-        this.plugins.oscillator.stop();
+        _.each(this.oscillators, function(oscillator) {
+          oscillator.stop();
+        });
       }
     },
     setOscillatorFrequency: function(model, frequency) {
-      this.plugins.oscillator.set('frequency', frequency);
+      _.each(this.oscillators, function(oscillator) {
+        oscillator.set('frequency', frequency);
+      });
     }
   });
 
