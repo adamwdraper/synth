@@ -1,6 +1,13 @@
 doctype html
 html
+  block vars
+    - var router = 'default'
+    
   head
     title= title
-  body
+
+  body(data-appular-router="#{router}")
+
     block content
+
+    script(src="/javascripts/libraries/require/require.js", data-main="/javascripts/libraries/require/configs/dev")

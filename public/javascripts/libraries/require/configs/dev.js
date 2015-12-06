@@ -24,7 +24,6 @@ requirejs.config({
     },
     shim: {},
     deps: [
-        'adapter',
         'backboneStickit',
         'jqueryFunctions',
         'log',
