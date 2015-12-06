@@ -6,30 +6,49 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './states',
+  'plugins/oscillator/plugin',
+  'plugins/volume/plugin',
+  './settings',
   'template!./template.html'
-], function($, _, Backbone, States, template) {
+], function($, _, Backbone, Oscillator, Volume, Settings, template) {
+  var context = new (window.AudioContext || window.webkitAudioContext)();
+
   var View = Backbone.View.extend({
     template: template,
     bindings: {},
     listeners: {},
     events: {
-      'click [data-start-stop]': 'toggleStartStop'
+      'click [data-play]': 'togglePlaying'
     },
-    initialize: function() {},
+    initialize: function() {
+      this.settings = new Settings();
+      this.listenTo(this.settings, 'change:isPlaying', this.updatePlaying);
+    },
     render: function() {
-      this.states = new States();
-      this.listenTo(this.states, 'change:isPlaying', this.log)
-
       this.$el.html(this.template());
+
+      this.plugins.master = new Volume({
+        el: this.$el.find('[data-master]'),
+        context: context
+      }).render();
+
+      this.plugins.oscillator = new Oscillator({
+        el: this.$el.find('[data-oscillator]'),
+        context: context,
+        volume: this.plugins.master.volume
+      }).render();
 
       return this;
     },
-    toggleStartStop: function() {
-      this.states.toggle('isPlaying');
+    togglePlaying: function() {
+      this.settings.toggle('isPlaying');
     },
-    log: function(value) {
-      log(value);
+    updatePlaying: function() {
+      if (this.settings.get('isPlaying')) {
+        this.plugins.oscillator.play();
+      } else {
+        this.plugins.oscillator.stop();
+      }
     }
   });
 
