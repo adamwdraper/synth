@@ -3,7 +3,8 @@ define([
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
     defaults: {
-      isPlaying: false
+      isPlaying: false,
+      volume: 0.5
     }
   });
 

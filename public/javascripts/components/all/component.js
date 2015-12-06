@@ -16,13 +16,15 @@ define([
   var View = Backbone.View.extend({
     template: template,
     bindings: {
-      '[data-play]': 'isPlaying'
+      '[data-play]': 'isPlaying',
+      '[data-volume]': 'volume'
     },
     listeners: {},
     events: {},
     initialize: function() {
       this.states = new States();
       this.listenTo(this.states, 'change:isPlaying', this.play);
+      this.listenTo(this.states, 'change:volume', this.updateVolume);
 
       masterVolume.connect(context.destination);
     },
@@ -44,6 +46,11 @@ define([
       } else {
         oscillator.stop();
       }
+
+      log(value);
+    },
+    updateVolume: function(model, value) {
+      masterVolume.gain.value = value;
 
       log(value);
     }
