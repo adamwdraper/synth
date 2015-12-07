@@ -30,44 +30,60 @@ define([
     render: function() {
       this.$el.html(this.template());
 
+      this.$modules = this.$el.find('[data-modules]');
+
+      this.initializeModules();
+
+      this.renderModules();
+
+      return this;
+    },
+    initializeModules: function() {
+      var oscillatorCount = 2;
+
       // Analyzer
       this.plugins.oscilliscope = new Oscilliscope({
-        el: this.$el.find('[data-oscilliscope]'),
         context: context
-      }).render();
+      });
 
       // Master Volume
       this.plugins.master = new Volume({
-        el: this.$el.find('[data-master]'),
         context: context,
         connections: [
           this.plugins.oscilliscope.node,
           context.destination
         ]
-      }).render();
+      });
 
-      // All Oscillators
-      _.each(this.$el.find('[data-oscillator]'), function($oscillator) {
+      // Add Oscillators
+      while (this.oscillators.length < oscillatorCount) {
         var oscillator = new Oscillator({
-          el: $oscillator,
           context: context,
           connections: [
             this.plugins.master.node
           ]
-        }).render();
+        });
 
         this.oscillators.push(oscillator);
-      }, this);
+      }
 
       // Frequency Slider
       this.plugins.frequency = new Frequency({
-        el: this.$el.find('[data-frequency]'),
         max: 4000,
         min: 0
-      }).render();
+      });
       this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
+    },
+    renderModules: function() {
+      this.$modules.append(this.plugins.oscilliscope.render().$el);
 
-      return this;
+      _.each(this.oscillators, function(oscillator) {
+        this.$modules.append(oscillator.render().$el);
+      }, this);
+      
+      this.$modules.append(this.plugins.master.render().$el);
+
+      this.$modules.append(this.plugins.frequency.render().$el);
     },
     togglePlaying: function() {
       this.settings.toggle('isPlaying');

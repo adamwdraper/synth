@@ -8,6 +8,7 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, template) {
   var View = Backbone.View.extend({
+    className: 'ui-module',
     node: null,
     template: template,
     bindings: {},
