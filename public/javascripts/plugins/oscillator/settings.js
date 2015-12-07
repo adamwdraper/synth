@@ -4,7 +4,8 @@ define([
   var Model = Backbone.Model.extend({
     defaults: {
       isActive: false,
-      wave: 'sine'
+      wave: 'sine',
+      frequency: 3000
     }
   });
 

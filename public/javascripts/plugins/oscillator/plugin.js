@@ -10,7 +10,8 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, Settings, template) {
   var View = Backbone.View.extend({
-    oscillator: null,
+    node: null,
+    connections: null,
     template: template,
     bindings: {
       '[data-active]': 'isActive',
@@ -20,7 +21,10 @@ define([
     events: {},
     initialize: function() {
       this.settings = new Settings();
-      this.listenTo(this.settings, 'change:wave', this.updateWave);
+      this.listenTo(this.settings, 'change:wave', this.setWave);
+      this.listenTo(this.settings, 'change:frequency', this.setFrequency);
+
+      this.connections = [];
     },
     render: function() {
       this.$el.html(this.template());
@@ -29,28 +33,39 @@ define([
 
       return this;
     },
+    addConnections: function() {
+      _.each(this.data.connections, function(node) {
+        this.node.connect(node)
+      }, this);
+    },
     play: function() {
       if (this.settings.get('isActive')) {
-        this.oscillator = this.data.context.createOscillator();
-        this.oscillator.type = this.settings.get('wave');
-        this.oscillator.frequency.value = 1000;
-        this.oscillator.connect(this.data.volume);
-        this.oscillator.start(0);
+        this.node = this.data.context.createOscillator();
+        this.node.type = this.settings.get('wave');
+        this.node.frequency.value = this.settings.get('frequency');
+        this.addConnections();
+        this.node.start(0);
       }
     },
     stop: function() {
-      if (this.oscillator) {
-        this.oscillator.stop();
+      if (this.node) {
+        this.node.stop(0);
       }
       
-      this.oscillator = null;
+      this.node = null;
     },
-    updateWave: function(model, value) {
-      if (this.oscillator) {
-        this.oscillator.type = value;
+    set: function(attribute, value) {
+      this.settings.set(attribute, value);
+    },
+    setWave: function(model, type) {
+      if (this.node) {
+        this.node.type = type;
       }
-
-      log(value);
+    },
+    setFrequency: function(model, frequency) {
+      if (this.node) {
+        this.node.frequency.value = frequency;
+      }
     }
   });
 

@@ -6,15 +6,19 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'plugins/oscilliscope/plugin',
+  'plugins/frequency-bar-graph/plugin',
   'plugins/oscillator/plugin',
+  'plugins/frequency-slider/plugin',
   'plugins/volume/plugin',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscillator, Volume, Settings, template) {
+], function($, _, Backbone, Oscilliscope, FrequencyBarGraph, Oscillator, Frequency, Volume, Settings, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
 
   var View = Backbone.View.extend({
     template: template,
+    oscillators: [],
     bindings: {},
     listeners: {},
     events: {
@@ -27,16 +31,49 @@ define([
     render: function() {
       this.$el.html(this.template());
 
-      this.plugins.master = new Volume({
-        el: this.$el.find('[data-master]'),
+      // Analyzer
+      this.plugins.oscilliscope = new Oscilliscope({
+        el: this.$el.find('[data-oscilliscope]'),
         context: context
       }).render();
 
-      this.plugins.oscillator = new Oscillator({
-        el: this.$el.find('[data-oscillator]'),
-        context: context,
-        volume: this.plugins.master.volume
+      // Analyzer
+      this.plugins.frequencyBarGraph = new FrequencyBarGraph({
+        el: this.$el.find('[data-frequency-bar-graph]'),
+        context: context
       }).render();
+
+      // Master Volume
+      this.plugins.master = new Volume({
+        el: this.$el.find('[data-master]'),
+        context: context,
+        connections: [
+          this.plugins.oscilliscope.node,
+          this.plugins.frequencyBarGraph.node,
+          context.destination
+        ]
+      }).render();
+
+      // All Oscillators
+      _.each(this.$el.find('[data-oscillator]'), function($oscillator) {
+        var oscillator = new Oscillator({
+          el: $oscillator,
+          context: context,
+          connections: [
+            this.plugins.master.node
+          ]
+        }).render();
+
+        this.oscillators.push(oscillator);
+      }, this);
+
+      // Frequency Slider
+      this.plugins.frequency = new Frequency({
+        el: this.$el.find('[data-frequency]'),
+        max: 4000,
+        min: 0
+      }).render();
+      this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
 
       return this;
     },
@@ -45,10 +82,19 @@ define([
     },
     updatePlaying: function() {
       if (this.settings.get('isPlaying')) {
-        this.plugins.oscillator.play();
+        _.each(this.oscillators, function(oscillator) {
+          oscillator.play();
+        });
       } else {
-        this.plugins.oscillator.stop();
+        _.each(this.oscillators, function(oscillator) {
+          oscillator.stop();
+        });
       }
+    },
+    setOscillatorFrequency: function(model, frequency) {
+      _.each(this.oscillators, function(oscillator) {
+        oscillator.set('frequency', frequency);
+      });
     }
   });
 

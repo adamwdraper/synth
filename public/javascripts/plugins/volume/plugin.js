@@ -9,7 +9,7 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, Settings, template) {
   var View = Backbone.View.extend({
-    volume: null,
+    node: null,
     template: template,
     bindings: {
       '[data-volume]': 'volume'
@@ -19,19 +19,25 @@ define([
     initialize: function() {
       this.settings = new Settings();
       this.listenTo(this.settings, 'change:volume', this.updateVolume);
+
+      this.node = this.data.context.createGain();
     },
     render: function() {
       this.$el.html(this.template());
 
-      this.volume = this.data.context.createGain();
-      this.volume.connect(this.data.context.destination);
+      this.addConnections();
 
       this.stickit(this.settings);
       
       return this;
     },
+    addConnections: function() {
+      _.each(this.data.connections, function(node) {
+        this.node.connect(node)
+      }, this);
+    },
     updateVolume: function(model, value) {
-      this.volume.gain.value = value;
+      this.node.gain.value = value;
 
       log(value);
     }
