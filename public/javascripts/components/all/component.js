@@ -7,12 +7,13 @@ define([
   'underscore',
   'backbone',
   'plugins/oscilliscope/plugin',
+  'plugins/frequency-bar-graph/plugin',
   'plugins/oscillator/plugin',
   'plugins/frequency-slider/plugin',
   'plugins/volume/plugin',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscilliscope, Oscillator, Frequency, Volume, Settings, template) {
+], function($, _, Backbone, Oscilliscope, FrequencyBarGraph, Oscillator, Frequency, Volume, Settings, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
 
   var View = Backbone.View.extend({
@@ -36,12 +37,19 @@ define([
         context: context
       }).render();
 
+      // Analyzer
+      this.plugins.frequencyBarGraph = new FrequencyBarGraph({
+        el: this.$el.find('[data-frequency-bar-graph]'),
+        context: context
+      }).render();
+
       // Master Volume
       this.plugins.master = new Volume({
         el: this.$el.find('[data-master]'),
         context: context,
         connections: [
           this.plugins.oscilliscope.node,
+          this.plugins.frequencyBarGraph.node,
           context.destination
         ]
       }).render();
