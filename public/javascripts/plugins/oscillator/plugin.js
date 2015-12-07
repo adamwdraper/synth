@@ -10,7 +10,7 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, Settings, template) {
   var View = Backbone.View.extend({
-    oscillator: null,
+    node: null,
     template: template,
     bindings: {
       '[data-active]': 'isActive',
@@ -32,31 +32,31 @@ define([
     },
     play: function() {
       if (this.settings.get('isActive')) {
-        this.oscillator = this.data.context.createOscillator();
-        this.oscillator.type = this.settings.get('wave');
-        this.oscillator.frequency.value = this.settings.get('frequency');
-        this.oscillator.connect(this.data.volume);
-        this.oscillator.start(0);
+        this.node = this.data.context.createOscillator();
+        this.node.type = this.settings.get('wave');
+        this.node.frequency.value = this.settings.get('frequency');
+        this.node.connect(this.data.volume);
+        this.node.start(0);
       }
     },
     stop: function() {
-      if (this.oscillator) {
-        this.oscillator.stop();
+      if (this.node) {
+        this.node.stop();
       }
       
-      this.oscillator = null;
+      this.node = null;
     },
     set: function(attribute, value) {
       this.settings.set(attribute, value);
     },
     setWave: function(model, type) {
-      if (this.oscillator) {
-        this.oscillator.type = type;
+      if (this.node) {
+        this.node.type = type;
       }
     },
     setFrequency: function(model, frequency) {
-      if (this.oscillator) {
-        this.oscillator.frequency.value = frequency;
+      if (this.node) {
+        this.node.frequency.value = frequency;
       }
     }
   });

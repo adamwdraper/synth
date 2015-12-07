@@ -6,12 +6,13 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
   'plugins/frequency-slider/plugin',
   'plugins/volume/plugin',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscillator, Frequency, Volume, Settings, template) {
+], function($, _, Backbone, Oscilliscope, Oscillator, Frequency, Volume, Settings, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
 
   var View = Backbone.View.extend({
@@ -29,9 +30,15 @@ define([
     render: function() {
       this.$el.html(this.template());
 
+      this.plugins.oscilliscope = new Oscilliscope({
+        el: this.$el.find('[data-oscilliscope]'),
+        context: context
+      }).render();
+
       this.plugins.master = new Volume({
         el: this.$el.find('[data-master]'),
-        context: context
+        context: context,
+        oscilliscope: this.plugins.oscilliscope.analyser
       }).render();
 
       this.plugins.frequency = new Frequency({
@@ -44,7 +51,7 @@ define([
         var oscillator = new Oscillator({
           el: $oscillator,
           context: context,
-          volume: this.plugins.master.volume
+          volume: this.plugins.master.node
         }).render();
 
         this.oscillators.push(oscillator);
