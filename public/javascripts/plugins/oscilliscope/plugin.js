@@ -8,22 +8,21 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, template) {
   var View = Backbone.View.extend({
-    analyser: null,
+    node: null,
     template: template,
     bindings: {},
     listeners: {},
     events: {},
     initialize: function() {
       _.bindAll(this, 'draw');
+      
+      this.node = this.data.context.createAnalyser();
+      this.node.fftSize = 2048;
+      this.bufferLength = this.node.frequencyBinCount;
+      this.dataArray = new Uint8Array(this.bufferLength);
     },
     render: function() {
       this.$el.html(this.template());
-
-      this.analyser = this.data.context.createAnalyser();
-
-      this.analyser.fftSize = 2048;
-      this.bufferLength = this.analyser.frequencyBinCount;
-      this.dataArray = new Uint8Array(this.bufferLength);
 
       this.canvas = this.$el.find('canvas')[0];
       this.canvasContext = this.canvas.getContext("2d");
@@ -37,7 +36,7 @@ define([
     draw: function() {
       requestAnimationFrame(this.draw);
       
-      this.analyser.getByteTimeDomainData(this.dataArray);
+      this.node.getByteTimeDomainData(this.dataArray);
 
       this.canvasContext.fillStyle = 'rgb(200, 200, 200)';
       this.canvasContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
