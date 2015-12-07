@@ -1,0 +1,61 @@
+// Variables -------------------------------------
+
+
+// Mixins --------------------------------------
+
+
+// Placeholders --------------------------------------
+
+
+// Styles --------------------------------------
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: $font-sans-family;
+    color: $color-text;
+    padding: 0;
+    margin: 0;
+    font-size: 100%;
+
+    &.modal-open {
+        overflow: hidden;
+    }
+}
+
+a {
+    text-decoration: none;
+    color: $color-link;
+
+    &:visited,
+    &:active {
+        color: $color-link;
+    }    
+}
+
+*:focus {
+    outline: 0;
+}
+
+
+input {
+    
+    &[type=text],
+    &[type=password] {
+        width: 100%;
+        display: block;
+        height: 2.5em;
+        border-radius: 0.15em;
+        border: 1px solid $color-gray-lighter;
+        padding: 0 .5em;
+        color: $color-text;
+    }
+}
+
+textarea {
+    border-radius: 0.15em;
+    border: 1px solid $color-gray-lighter;
+    padding: .5em;
+    color: $color-text;
+}
