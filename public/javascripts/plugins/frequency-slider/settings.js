@@ -3,7 +3,7 @@ define([
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
     defaults: {
-      frequency: 3000
+      frequency: 1500
     }
   });
 

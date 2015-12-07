@@ -61,7 +61,9 @@ define([
 
       // Frequency Slider
       this.plugins.frequency = new Frequency({
-        el: this.$el.find('[data-frequency]')
+        el: this.$el.find('[data-frequency]'),
+        max: 4000,
+        min: 0
       }).render();
       this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
 
