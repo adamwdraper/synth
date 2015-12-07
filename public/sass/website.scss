@@ -3,19 +3,19 @@
 // Variables
 @import "themes/website/variables/color";
 @import "themes/website/variables/font";
-@import "themes/website/variables/layout";
 @import "themes/website/variables/screen";
 @import "themes/website/variables/size";
 @import "themes/website/variables/z-index";
 
 // Utilities
-@import "themes/website/utilities/animate";
 @import "themes/website/utilities/functions";
 @import "themes/website/utilities/mixins";
 @import "themes/website/utilities/styles";
 
 // UIs
 @import "themes/website/uis/body/base";
+@import "themes/website/uis/module/base";
+@import "themes/website/uis/synth/base";
 
 
 // mobile devices
