@@ -28,6 +28,8 @@ define([
 
       this.addConnections();
 
+      this.updateVolume();
+
       this.stickit(this.settings);
       
       return this;
@@ -37,10 +39,8 @@ define([
         this.node.connect(node)
       }, this);
     },
-    updateVolume: function(model, value) {
-      this.node.gain.value = value;
-
-      log(value);
+    updateVolume: function() {
+      this.node.gain.value = this.settings.get('volume');
     }
   });
 

@@ -3,9 +3,9 @@ define([
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
     defaults: {
-      isActive: false,
+      isActive: true,
       wave: 'sine',
-      frequency: 3000
+      frequency: 440
     }
   });
 

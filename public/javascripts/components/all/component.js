@@ -21,7 +21,7 @@ define([
     listeners: {},
     events: {},
     initialize: function() {
-      this.listenTo(keyboard, 'note:start', this.setOscillatorFrequency);
+      this.listenTo(keyboard, 'note:start', this.playOscillators);
       this.listenTo(keyboard, 'note:stop', this.stopOscillators);
     },
     render: function() {
@@ -36,7 +36,7 @@ define([
       return this;
     },
     initializeModules: function() {
-      var oscillatorCount = 2;
+      var oscillatorCount = 1;
 
       // Analyzer
       this.plugins.oscilliscope = new Oscilliscope({
@@ -78,9 +78,10 @@ define([
         oscillator.stop();
       });
     },
-    setOscillatorFrequency: function(note) {
+    playOscillators: function(note) {
       _.each(this.oscillators, function(oscillator) {
         oscillator.set('frequency', midi.noteNumberToFrequency(note.data[1]));
+        oscillator.play();
       });
     }
   });
