@@ -31,9 +31,9 @@ define([
     initialize: function() {
       _.bindAll(this, 'playNote');
 
-      this.$document.on('keydown', this.playNote);
+      this.$document.on('keydown', this.startNote);
     },
-    playNote: function(event) {
+    startNote: function(event) {
       var midiEvent;
 
       if (event && event.keyCode && this.map[event.keyCode]) {
