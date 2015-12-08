@@ -6,26 +6,22 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/keyboard/utility',
+  'utilities/midi/utility',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
-  'plugins/frequency-slider/plugin',
   'plugins/volume/plugin',
-  './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscilliscope, Oscillator, Frequency, Volume, Settings, template) {
+], function($, _, Backbone, keyboard, midi, Oscilliscope, Oscillator, Volume, template) {
   var context = new (window.AudioContext || window.webkitAudioContext)();
-
   var View = Backbone.View.extend({
     template: template,
     oscillators: [],
     bindings: {},
     listeners: {},
-    events: {
-      'click [data-play]': 'togglePlaying'
-    },
+    events: {},
     initialize: function() {
-      this.settings = new Settings();
-      this.listenTo(this.settings, 'change:isPlaying', this.updatePlaying);
+      this.listenTo(keyboard, 'note:start', this.setOscillatorFrequency)
     },
     render: function() {
       this.$el.html(this.template());
@@ -66,13 +62,6 @@ define([
 
         this.oscillators.push(oscillator);
       }
-
-      // Frequency Slider
-      this.plugins.frequency = new Frequency({
-        max: 4000,
-        min: 0
-      });
-      this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
     },
     renderModules: function() {
       this.$modules.append(this.plugins.oscilliscope.render().$el);
@@ -82,11 +71,6 @@ define([
       }, this);
       
       this.$modules.append(this.plugins.master.render().$el);
-
-      this.$modules.append(this.plugins.frequency.render().$el);
-    },
-    togglePlaying: function() {
-      this.settings.toggle('isPlaying');
     },
     updatePlaying: function() {
       if (this.settings.get('isPlaying')) {
@@ -99,9 +83,9 @@ define([
         });
       }
     },
-    setOscillatorFrequency: function(model, frequency) {
+    setOscillatorFrequency: function(note) {
       _.each(this.oscillators, function(oscillator) {
-        oscillator.set('frequency', frequency);
+        oscillator.set('frequency', midi.noteNumberToFrequency(note.data[1]));
       });
     }
   });

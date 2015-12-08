@@ -1,5 +1,5 @@
 /**
- * @appular boilerplate
+ * @appular oscillator
  */
 
 define([
@@ -66,7 +66,11 @@ define([
     setFrequency: function(model, frequency) {
       if (this.node) {
         this.node.frequency.value = frequency;
+
+        this.stop();
       }
+      
+      this.play();
     }
   });
 
