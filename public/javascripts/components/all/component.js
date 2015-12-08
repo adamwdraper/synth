@@ -21,7 +21,8 @@ define([
     listeners: {},
     events: {},
     initialize: function() {
-      this.listenTo(keyboard, 'note:start', this.setOscillatorFrequency)
+      this.listenTo(keyboard, 'note:start', this.setOscillatorFrequency);
+      this.listenTo(keyboard, 'note:stop', this.stopOscillators);
     },
     render: function() {
       this.$el.html(this.template());
@@ -72,16 +73,10 @@ define([
       
       this.$modules.append(this.plugins.master.render().$el);
     },
-    updatePlaying: function() {
-      if (this.settings.get('isPlaying')) {
-        _.each(this.oscillators, function(oscillator) {
-          oscillator.play();
-        });
-      } else {
-        _.each(this.oscillators, function(oscillator) {
-          oscillator.stop();
-        });
-      }
+    stopOscillators: function() {
+      _.each(this.oscillators, function(oscillator) {
+        oscillator.stop();
+      });
     },
     setOscillatorFrequency: function(note) {
       _.each(this.oscillators, function(oscillator) {

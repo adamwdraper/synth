@@ -2,9 +2,8 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './notes',
   './settings'
-], function($, _, Backbone, Notes, Settings) {
+], function($, _, Backbone, Settings) {
   var View = Backbone.View.extend({
     map: {
       '65': 1,
@@ -22,16 +21,14 @@ define([
       '89': 9,
       '90': 100 // -
     },
-    notes: new Notes(),
     settings: new Settings(),
-    listeners: {
-      'add notes': 'triggerNote'
-    },
+    listeners: {},
     events: {},
     initialize: function() {
-      _.bindAll(this, 'playNote');
+      _.bindAll(this, 'startNote', 'stopNote');
 
       this.$document.on('keydown', this.startNote);
+      this.$document.on('keyup', this.stopNote);
     },
     startNote: function(event) {
       var midiEvent;
@@ -43,7 +40,7 @@ define([
               break;
             case 200:
               this.settings.octaveUp();
-            break;
+              break;
             default:
               midiEvent = {
                 'eventName': 'MIDIMessageEvent',
@@ -54,17 +51,39 @@ define([
                 ],
                 'timeStamp': event.timeStamp
               };
-            break;
+              break;
         }
       }
 
       if (midiEvent) {
-        this.notes.add(midiEvent);
+        this.trigger('note:start', midiEvent);
       }
     },
-    triggerNote: function(note) {
-      this.trigger('note:' + note.getAction(), note.toJSON());
-      log(note.toJSON);
+    stopNote: function(event) {
+      var midiEvent;
+
+      if (event && event.keyCode && this.map[event.keyCode]) {
+        switch (this.map[event.keyCode]) {
+            case 100:
+            case 200:
+              break;
+            default:
+              midiEvent = {
+                'eventName': 'MIDIMessageEvent',
+                'data': [
+                  128,
+                  this.map[event.keyCode] + (this.settings.get('octave') * 12),
+                  0
+                ],
+                'timeStamp': event.timeStamp
+              };
+              break;
+        }
+      }
+
+      if (midiEvent) {
+        this.trigger('note:stop', midiEvent);
+      }
     }
   });
 
