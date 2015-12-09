@@ -6,24 +6,21 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'utilities/keyboard/utility',
+  'utilities/context/utility',
   'utilities/midi/utility',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
+  'plugins/voices/plugin',
   'plugins/volume/plugin',
   'template!./template.html'
-], function($, _, Backbone, keyboard, midi, Oscilliscope, Oscillator, Volume, template) {
-  var context = new (window.AudioContext || window.webkitAudioContext)();
+], function($, _, Backbone, context, midi, Oscilliscope, Oscillator, Voices, Volume, template) {
   var View = Backbone.View.extend({
     template: template,
     oscillators: [],
     bindings: {},
     listeners: {},
     events: {},
-    initialize: function() {
-      this.listenTo(keyboard, 'note:start', this.playOscillators);
-      this.listenTo(keyboard, 'note:stop', this.stopOscillators);
-    },
+    initialize: function() {},
     render: function() {
       this.$el.html(this.template());
 
@@ -39,13 +36,10 @@ define([
       var oscillatorCount = 1;
 
       // Analyzer
-      this.plugins.oscilliscope = new Oscilliscope({
-        context: context
-      });
+      this.plugins.oscilliscope = new Oscilliscope();
 
       // Master Volume
       this.plugins.master = new Volume({
-        context: context,
         connections: [
           this.plugins.oscilliscope.node,
           context.destination
@@ -55,7 +49,6 @@ define([
       // Add Oscillators
       while (this.oscillators.length < oscillatorCount) {
         var oscillator = new Oscillator({
-          context: context,
           connections: [
             this.plugins.master.node
           ]

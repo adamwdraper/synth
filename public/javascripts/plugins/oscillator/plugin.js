@@ -6,9 +6,10 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Settings, template) {
+], function($, _, Backbone, context, Settings, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     node: null,
@@ -43,7 +44,7 @@ define([
       if (this.settings.get('isActive')) {
         this.stop();
 
-        this.node = this.data.context.createOscillator();
+        this.node = context.createOscillator();
         this.node.type = this.settings.get('wave');
         this.node.frequency.value = this.settings.get('frequency');
         this.addConnections();

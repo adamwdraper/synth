@@ -1,7 +1,20 @@
 define(function() {
   var noteMap = {};
   var noteNumberMap = [];
-  var notes = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
+  var notes = [
+    'C',
+    'C#',
+    'D',
+    'D#',
+    'E',
+    'F',
+    'F#',
+    'G',
+    'G#',
+    'A',
+    'A#',
+    'B'
+  ];
   var getBaseLog = function (value, base) {
     return Math.log(value) / Math.log(base);
   };

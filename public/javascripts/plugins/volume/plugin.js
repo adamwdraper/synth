@@ -5,9 +5,10 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Settings, template) {
+], function($, _, Backbone, context, Settings, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     node: null,
@@ -21,7 +22,7 @@ define([
       this.settings = new Settings();
       this.listenTo(this.settings, 'change:volume', this.updateVolume);
 
-      this.node = this.data.context.createGain();
+      this.node = context.createGain();
     },
     render: function() {
       this.$el.html(this.template());
