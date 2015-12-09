@@ -43,13 +43,10 @@ define([
               break;
             default:
               midiEvent = {
-                'eventName': 'MIDIMessageEvent',
-                'data': [
-                  144,
-                  this.map[event.keyCode] + (this.settings.get('octave') * 12),
-                  100
-                ],
-                'timeStamp': event.timeStamp
+                event: 144,
+                note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
+                velocity: 100,
+                timeStamp: event.timeStamp
               };
               break;
         }
@@ -69,13 +66,10 @@ define([
               break;
             default:
               midiEvent = {
-                'eventName': 'MIDIMessageEvent',
-                'data': [
-                  128,
-                  this.map[event.keyCode] + (this.settings.get('octave') * 12),
-                  0
-                ],
-                'timeStamp': event.timeStamp
+                event: 128,
+                note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
+                velocity: 0,
+                timeStamp: event.timeStamp
               };
               break;
         }
@@ -87,37 +81,5 @@ define([
     }
   });
 
-
-        // function _keyup(e) {
-        //     // TODO: solve i18n issue
-        //     var midievent = null;
-
-        //     if(e && e.keyCode && mapping[e.keyCode]) {
-        //         switch(mapping[e.keyCode]) {
-        //             // octave down
-        //             case 100:
-
-        //             break;
-        //             // octave up
-        //             case 200:
-
-        //             break;
-        //             // note
-        //             default:
-        //                 midievent = {
-        //                     'eventName': 'MIDIMessageEvent',
-        //                     'data': [128, mapping[e.keyCode] + (currentOctave * 12), 0],
-        //                     'timeStamp': e.timeStamp
-        //                 };
-        //             break;
-        //         }
-        //     }
-
-        //     if(midievent) {
-        //         $window.postMessage(midievent, '*');
-        //         var pos = activeNotes.indexOf(midievent.data[1]);
-        //         activeNotes.splice(pos, 1);
-        //     }
-        // }
   return new View();
 });

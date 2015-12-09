@@ -7,16 +7,19 @@ define([
   'underscore',
   'backbone',
   'utilities/context/utility',
+  'utilities/keyboard/utility',
   'utilities/midi/utility',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
   'plugins/voices/plugin',
   'plugins/volume/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, midi, Oscilliscope, Oscillator, Voices, Volume, template) {
+], function($, _, Backbone, context, keyboard, midi, Oscilliscope, Oscillator, Voices, Volume, template) {
   var View = Backbone.View.extend({
     template: template,
-    oscillators: [],
+    instrument: null,
+    modules: {},
+    sources: {},
     bindings: {},
     listeners: {},
     events: {},
@@ -26,55 +29,71 @@ define([
 
       this.$modules = this.$el.find('[data-modules]');
 
-      this.initializeModules();
-
-      this.renderModules();
-
-      return this;
-    },
-    initializeModules: function() {
-      var oscillatorCount = 1;
+      // Voice
+      this.instrument = new Voices({
+        input: keyboard
+      });
+      this.listenTo(this.instrument, 'note:start', this.startSources);
+      this.listenTo(this.instrument, 'note:stop', this.stopSources);
 
       // Analyzer
-      this.plugins.oscilliscope = new Oscilliscope();
+      this.initializeModule('oscilliscope', Oscilliscope);
 
       // Master Volume
-      this.plugins.master = new Volume({
+      this.initializeModule('master', Volume, {
         connections: [
-          this.plugins.oscilliscope.node,
+          this.modules.oscilliscope.node,
           context.destination
         ]
       });
 
-      // Add Oscillators
-      while (this.oscillators.length < oscillatorCount) {
-        var oscillator = new Oscillator({
-          connections: [
-            this.plugins.master.node
-          ]
-        });
+      this.initializeSource('oscillator', Oscillator, {
+        connections: [
+          this.modules.master.node
+        ]
+      });
 
-        this.oscillators.push(oscillator);
-      }
+      this.renderAll();
+
+      return this;
     },
-    renderModules: function() {
-      this.$modules.append(this.plugins.oscilliscope.render().$el);
+    initializeModule: function(name, Module, options) {
+      return this.initializeView('module', name, Module, options);
+    },
+    initializeSource: function(name, Source, options) {
+      return this.initializeView('source', name, Source, options);
+    },
+    initializeView: function(type, name, View, options) {
+      var view;
 
-      _.each(this.oscillators, function(oscillator) {
-        this.$modules.append(oscillator.render().$el);
+      options = options || {};
+
+      view = new View(options);
+
+      this[type + 's'][name] = view;
+
+      return view;
+    },
+    renderAll: function() {
+      this.instrument.render();
+
+      _.each(this.sources, function(source) {
+        this.$modules.append(source.render().$el);
       }, this);
       
-      this.$modules.append(this.plugins.master.render().$el);
+      _.each(this.modules, function(module) {
+        this.$modules.append(module.render().$el);
+      }, this);
     },
-    stopOscillators: function() {
-      _.each(this.oscillators, function(oscillator) {
-        oscillator.stop();
+    stopSources: function() {
+      _.each(this.sources, function(source) {
+        source.stop();
       });
     },
-    playOscillators: function(note) {
-      _.each(this.oscillators, function(oscillator) {
-        oscillator.set('frequency', midi.noteNumberToFrequency(note.data[1]));
-        oscillator.play();
+    startSources: function(note) {
+      _.each(this.sources, function(source) {
+        source.set('frequency', midi.noteNumberToFrequency(note.note));
+        source.play();
       });
     }
   });
