@@ -34,24 +34,22 @@ define([
     startNote: function(event) {
       var midiEvent;
 
-      log('start');
-
       if (event && event.keyCode && this.map[event.keyCode]) {
         switch (this.map[event.keyCode]) {
-            case 100:
-              this.settings.octaveDown();
-              break;
-            case 200:
-              this.settings.octaveUp();
-              break;
-            default:
-              midiEvent = {
-                event: 144,
-                note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
-                velocity: 100,
-                timeStamp: event.timeStamp
-              };
-              break;
+          case 100:
+            this.settings.octaveDown();
+            break;
+          case 200:
+            this.settings.octaveUp();
+            break;
+          default:
+            midiEvent = {
+              event: 144,
+              note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
+              velocity: 100,
+              timeStamp: event.timeStamp
+            };
+            break;
         }
       }
 
@@ -64,20 +62,19 @@ define([
     stopNote: function(event) {
       var midiEvent;
 
-
       if (event && event.keyCode && this.map[event.keyCode]) {
         switch (this.map[event.keyCode]) {
-            case 100:
-            case 200:
-              break;
-            default:
-              midiEvent = {
-                event: 128,
-                note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
-                velocity: 0,
-                timeStamp: event.timeStamp
-              };
-              break;
+          case 100:
+          case 200:
+            break;
+          default:
+            midiEvent = {
+              event: 128,
+              note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
+              velocity: 0,
+              timeStamp: event.timeStamp
+            };
+            break;
         }
       }
 
