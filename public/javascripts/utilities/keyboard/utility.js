@@ -21,6 +21,7 @@ define([
       '89': 9,
       '90': 100 // -
     },
+    activeNotes: [],
     settings: new Settings(),
     listeners: {},
     events: {},
@@ -32,6 +33,8 @@ define([
     },
     startNote: function(event) {
       var midiEvent;
+
+      log('start');
 
       if (event && event.keyCode && this.map[event.keyCode]) {
         switch (this.map[event.keyCode]) {
@@ -52,12 +55,15 @@ define([
         }
       }
 
-      if (midiEvent) {
+      if (midiEvent && !this.isActiveNote(midiEvent.note)) {
+        this.addActiveNote(midiEvent.note);
         this.trigger('note:start', midiEvent);
+        log('start', midiEvent.note, this.activeNotes);
       }
     },
     stopNote: function(event) {
       var midiEvent;
+
 
       if (event && event.keyCode && this.map[event.keyCode]) {
         switch (this.map[event.keyCode]) {
@@ -75,9 +81,22 @@ define([
         }
       }
 
-      if (midiEvent) {
+      if (midiEvent && this.isActiveNote(midiEvent.note)) {
+        this.removeActiveNote(midiEvent.note);
         this.trigger('note:stop', midiEvent);
+        log('stop', midiEvent.note, this.activeNotes);
       }
+    },
+    isActiveNote: function(note) {
+      return this.activeNotes.indexOf(note) > -1;
+    },
+    addActiveNote: function(note) {
+      this.activeNotes.push(note);
+    },
+    removeActiveNote: function(note) {
+      var index = this.activeNotes.indexOf(note);
+
+      this.activeNotes.splice(index, 1);
     }
   });
 
