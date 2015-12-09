@@ -55,8 +55,7 @@ define([
 
       if (midiEvent && !this.isActiveNote(midiEvent.note)) {
         this.addActiveNote(midiEvent.note);
-        this.trigger('note:start', midiEvent);
-        log('start', midiEvent.note, this.activeNotes);
+        this.trigger('note:start', midiEvent, this.activeNotes);
       }
     },
     stopNote: function(event) {
@@ -80,8 +79,7 @@ define([
 
       if (midiEvent && this.isActiveNote(midiEvent.note)) {
         this.removeActiveNote(midiEvent.note);
-        this.trigger('note:stop', midiEvent);
-        log('stop', midiEvent.note, this.activeNotes);
+        this.trigger('note:stop', midiEvent, this.activeNotes);
       }
     },
     isActiveNote: function(note) {
