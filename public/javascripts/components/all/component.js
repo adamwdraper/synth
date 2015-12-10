@@ -8,13 +8,12 @@ define([
   'backbone',
   'utilities/context/utility',
   'utilities/keyboard/utility',
-  'utilities/midi/utility',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
-  'plugins/voices/plugin',
+  'plugins/voice/plugin',
   'plugins/volume/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, keyboard, midi, Oscilliscope, Oscillator, Voices, Volume, template) {
+], function($, _, Backbone, context, keyboard, Oscilliscope, Oscillator, Voice, Volume, template) {
   var View = Backbone.View.extend({
     template: template,
     instrument: null,
@@ -28,13 +27,6 @@ define([
       this.$el.html(this.template());
 
       this.$modules = this.$el.find('[data-modules]');
-
-      // Voice
-      this.instrument = new Voices({
-        input: keyboard
-      });
-      this.listenTo(this.instrument, 'note:start', this.startSources);
-      this.listenTo(this.instrument, 'note:stop', this.stopSources);
 
       // Analyzer
       this.initializeModule('oscilliscope', Oscilliscope);
@@ -51,6 +43,12 @@ define([
         connections: [
           this.modules.master.node
         ]
+      });
+
+      // Voice
+      this.voice = new Voice({
+        input: keyboard,
+        sources: this.sources 
       });
 
       this.renderAll();
@@ -75,7 +73,7 @@ define([
       return view;
     },
     renderAll: function() {
-      this.instrument.render();
+      this.voice.render();
 
       _.each(this.sources, function(source) {
         this.$modules.append(source.render().$el);
@@ -84,17 +82,6 @@ define([
       _.each(this.modules, function(module) {
         this.$modules.append(module.render().$el);
       }, this);
-    },
-    stopSources: function() {
-      _.each(this.sources, function(source) {
-        source.stop();
-      });
-    },
-    startSources: function(note) {
-      _.each(this.sources, function(source) {
-        source.set('frequency', midi.noteNumberToFrequency(note.note));
-        source.play();
-      });
     }
   });
 

@@ -38,7 +38,7 @@ define([
         this.node.connect(node)
       }, this);
     },
-    play: function() {
+    play: function(frequency) {
       log('play');
       
       if (this.settings.get('isActive')) {
@@ -46,10 +46,13 @@ define([
 
         this.node = context.createOscillator();
         this.node.type = this.settings.get('wave');
-        this.node.frequency.value = this.settings.get('frequency');
+        this.node.frequency.value = frequency;
         this.addConnections();
         this.node.start(0);
       }
+    },
+    update: function(frequency) {
+      this.node.frequency.value = frequency;
     },
     stop: function() {
       if (this.node) {
@@ -57,9 +60,6 @@ define([
         
         this.node = null;
       }
-    },
-    set: function(attribute, value) {
-      this.settings.set(attribute, value);
     }
   });
 
