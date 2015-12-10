@@ -6,103 +6,82 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
+  'utilities/keyboard/utility',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
-  'plugins/frequency-slider/plugin',
+  'plugins/voice/plugin',
   'plugins/volume/plugin',
-  './settings',
   'template!./template.html'
-], function($, _, Backbone, Oscilliscope, Oscillator, Frequency, Volume, Settings, template) {
-  var context = new (window.AudioContext || window.webkitAudioContext)();
-
+], function($, _, Backbone, context, keyboard, Oscilliscope, Oscillator, Voice, Volume, template) {
   var View = Backbone.View.extend({
     template: template,
-    oscillators: [],
+    instrument: null,
+    modules: {},
+    sources: {},
     bindings: {},
     listeners: {},
-    events: {
-      'click [data-play]': 'togglePlaying'
-    },
-    initialize: function() {
-      this.settings = new Settings();
-      this.listenTo(this.settings, 'change:isPlaying', this.updatePlaying);
-    },
+    events: {},
+    initialize: function() {},
     render: function() {
       this.$el.html(this.template());
 
       this.$modules = this.$el.find('[data-modules]');
 
-      this.initializeModules();
-
-      this.renderModules();
-
-      return this;
-    },
-    initializeModules: function() {
-      var oscillatorCount = 2;
-
       // Analyzer
-      this.plugins.oscilliscope = new Oscilliscope({
-        context: context
-      });
+      this.initializeModule('oscilliscope', Oscilliscope);
 
       // Master Volume
-      this.plugins.master = new Volume({
-        context: context,
+      this.initializeModule('master', Volume, {
         connections: [
-          this.plugins.oscilliscope.node,
+          this.modules.oscilliscope.node,
           context.destination
         ]
       });
 
-      // Add Oscillators
-      while (this.oscillators.length < oscillatorCount) {
-        var oscillator = new Oscillator({
-          context: context,
-          connections: [
-            this.plugins.master.node
-          ]
-        });
-
-        this.oscillators.push(oscillator);
-      }
-
-      // Frequency Slider
-      this.plugins.frequency = new Frequency({
-        max: 4000,
-        min: 0
+      this.initializeSource('oscillator', Oscillator, {
+        connections: [
+          this.modules.master.node
+        ]
       });
-      this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
-    },
-    renderModules: function() {
-      this.$modules.append(this.plugins.oscilliscope.render().$el);
 
-      _.each(this.oscillators, function(oscillator) {
-        this.$modules.append(oscillator.render().$el);
+      // Voice
+      this.voice = new Voice({
+        input: keyboard,
+        sources: this.sources 
+      });
+
+      this.renderAll();
+
+      return this;
+    },
+    initializeModule: function(name, Module, options) {
+      return this.initializeView('module', name, Module, options);
+    },
+    initializeSource: function(name, Source, options) {
+      return this.initializeView('source', name, Source, options);
+    },
+    initializeView: function(type, name, View, options) {
+      var view;
+
+      options = options || {};
+
+      view = new View(options);
+
+      this[type + 's'][name] = view;
+
+      return view;
+    },
+    renderAll: function() {
+      this.voice.render();
+
+      _.each(this.sources, function(source) {
+        this.$modules.append(source.render().$el);
       }, this);
       
-      this.$modules.append(this.plugins.master.render().$el);
-
-      this.$modules.append(this.plugins.frequency.render().$el);
-    },
-    togglePlaying: function() {
-      this.settings.toggle('isPlaying');
-    },
-    updatePlaying: function() {
-      if (this.settings.get('isPlaying')) {
-        _.each(this.oscillators, function(oscillator) {
-          oscillator.play();
-        });
-      } else {
-        _.each(this.oscillators, function(oscillator) {
-          oscillator.stop();
-        });
-      }
-    },
-    setOscillatorFrequency: function(model, frequency) {
-      _.each(this.oscillators, function(oscillator) {
-        oscillator.set('frequency', frequency);
-      });
+      _.each(this.modules, function(module) {
+        this.$modules.append(module.render().$el);
+      }, this);
     }
   });
 

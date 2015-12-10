@@ -1,14 +1,15 @@
 /**
- * @appular boilerplate
+ * @appular oscillator
  */
 
 define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, Settings, template) {
+], function($, _, Backbone, context, Settings, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     node: null,
@@ -22,8 +23,6 @@ define([
     events: {},
     initialize: function() {
       this.settings = new Settings();
-      this.listenTo(this.settings, 'change:wave', this.setWave);
-      this.listenTo(this.settings, 'change:frequency', this.setFrequency);
 
       this.connections = [];
     },
@@ -39,33 +38,28 @@ define([
         this.node.connect(node)
       }, this);
     },
-    play: function() {
+    play: function(frequency) {
+      log('play', frequency);
+      
       if (this.settings.get('isActive')) {
-        this.node = this.data.context.createOscillator();
+        this.stop();
+
+        this.node = context.createOscillator();
         this.node.type = this.settings.get('wave');
-        this.node.frequency.value = this.settings.get('frequency');
+        this.node.frequency.value = frequency;
         this.addConnections();
         this.node.start(0);
       }
     },
+    update: function(frequency) {
+      log('update', frequency);
+      this.node.frequency.value = frequency;
+    },
     stop: function() {
       if (this.node) {
         this.node.stop(0);
-      }
-      
-      this.node = null;
-    },
-    set: function(attribute, value) {
-      this.settings.set(attribute, value);
-    },
-    setWave: function(model, type) {
-      if (this.node) {
-        this.node.type = type;
-      }
-    },
-    setFrequency: function(model, frequency) {
-      if (this.node) {
-        this.node.frequency.value = frequency;
+        
+        this.node = null;
       }
     }
   });
