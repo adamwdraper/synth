@@ -2,8 +2,9 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/midi/utility',
   './settings'
-], function($, _, Backbone, Settings) {
+], function($, _, Backbone, midi, Settings) {
   var View = Backbone.View.extend({
     map: {
       '65': 1,
@@ -32,7 +33,7 @@ define([
       this.$document.on('keyup', this.stopNote);
     },
     startNote: function(event) {
-      var midiEvent;
+      var note;
 
       if (event && event.keyCode && this.map[event.keyCode]) {
         switch (this.map[event.keyCode]) {
@@ -43,23 +44,20 @@ define([
             this.settings.octaveUp();
             break;
           default:
-            midiEvent = {
-              event: 144,
-              note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
-              velocity: 100,
-              timeStamp: event.timeStamp
-            };
+            note = this.buildNote(event, {
+              velocity: 100
+            });
             break;
         }
       }
 
-      if (midiEvent && !this.isActiveNote(midiEvent.note)) {
-        this.addActiveNote(midiEvent.note);
-        this.trigger('note:start', midiEvent, this.activeNotes);
+      if (note && !this.isActiveNote(note)) {
+        this.trigger('note:start', note, this.activeNotes);
+        this.addActiveNote(note);
       }
     },
     stopNote: function(event) {
-      var midiEvent;
+      var note;
 
       if (event && event.keyCode && this.map[event.keyCode]) {
         switch (this.map[event.keyCode]) {
@@ -67,31 +65,43 @@ define([
           case 200:
             break;
           default:
-            midiEvent = {
-              event: 128,
-              note: this.map[event.keyCode] + (this.settings.get('octave') * 12),
-              velocity: 0,
-              timeStamp: event.timeStamp
-            };
+            note = this.buildNote(event, {
+              velocity: 0
+            });
             break;
         }
       }
 
-      if (midiEvent && this.isActiveNote(midiEvent.note)) {
-        this.removeActiveNote(midiEvent.note);
-        this.trigger('note:stop', midiEvent, this.activeNotes);
+      if (note && this.isActiveNote(note)) {
+        this.removeActiveNote(note);
+        this.trigger('note:stop', note, this.activeNotes);
       }
     },
+    buildNote: function(event, options) {
+      var number = this.map[event.keyCode] + (this.settings.get('octave') * 12);
+            
+      return _.extend({
+        number: number,
+        frequency: midi.noteNumberToFrequency(number),
+        timeStamp: event.timeStamp
+      }, options);
+    },
     isActiveNote: function(note) {
-      return this.activeNotes.indexOf(note) > -1;
+      return _.findWhere(this.activeNotes, {
+        number: note.number
+      });
     },
     addActiveNote: function(note) {
       this.activeNotes.push(note);
     },
     removeActiveNote: function(note) {
-      var index = this.activeNotes.indexOf(note);
+      var index = _.findIndex(this.activeNotes, {
+        number: note.number
+      });
 
-      this.activeNotes.splice(index, 1);
+      if (index > -1) {
+        this.activeNotes.splice(index, 1);
+      }
     }
   });
 
