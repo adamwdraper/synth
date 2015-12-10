@@ -73,7 +73,7 @@ define([
       return view;
     },
     renderAll: function() {
-      this.voice.render();
+      this.$modules.append(this.voice.render().$el);
 
       _.each(this.sources, function(source) {
         this.$modules.append(source.render().$el);

@@ -10,19 +10,25 @@ define([
   'template!./template.html'
 ], function($, _, Backbone, midi, Settings, template) {
   var View = Backbone.View.extend({
+    className: 'ui-module',
     template: template,
-    bindings: {},
+    bindings: {
+      'input[type=radio]': 'mode'
+    },
     listeners: {},
     events: {},
     initialize: function() {},
     render: function() {
       this.listenTo(this.data.input, 'note:start', this.dispatchStart);
       this.listenTo(this.data.input, 'note:stop', this.dispatchStop);
-      // this.$el.html(this.template());
+      
+      this.monoActiveNote = null;
+
+      this.$el.html(this.template());
 
       this.settings = new Settings();
 
-      this.monoActiveNote = null;
+      this.stickit(this.settings);
       
       return this;
     },
