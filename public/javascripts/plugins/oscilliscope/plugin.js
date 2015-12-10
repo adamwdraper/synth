@@ -5,8 +5,9 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   'template!./template.html'
-], function($, _, Backbone, template) {
+], function($, _, Backbone, context, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     node: null,
@@ -17,7 +18,7 @@ define([
     initialize: function() {
       _.bindAll(this, 'draw');
       
-      this.node = this.data.context.createAnalyser();
+      this.node = context.createAnalyser();
       this.node.fftSize = 2048;
       this.bufferLength = this.node.frequencyBinCount;
       this.dataArray = new Uint8Array(this.bufferLength);
