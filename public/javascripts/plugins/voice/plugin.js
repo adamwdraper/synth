@@ -31,13 +31,17 @@ define([
       this[this.settings.get('mode') + 'Stop'](note, activeNotes);
     },
     monoStart: function(note, activeNotes) {
+      if (activeNotes.length) {
+        this.stopSources(_.last(activeNotes));
+      }
+
       this.startSources(note);
     },
     monoStop: function(note, activeNotes) {
+      this.stopSources(note);
+
       if (activeNotes.length) {
-        this.monoStart(activeNotes[activeNotes.length - 1], activeNotes);
-      } else {
-        this.stopSources(note);
+        this.startSources(_.last(activeNotes));
       }
     },
     polyStart: function(note, activeNotes) {

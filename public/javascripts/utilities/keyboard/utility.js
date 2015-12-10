@@ -52,8 +52,8 @@ define([
       }
 
       if (note && !this.isActiveNote(note)) {
-        this.addActiveNote(note);
         this.trigger('note:start', note, this.activeNotes);
+        this.addActiveNote(note);
       }
     },
     stopNote: function(event) {
