@@ -25,21 +25,23 @@ define([
       return this;
     },
     dispatchStart: function(note, activeNotes) {
-      if (this.settings.get('mode') === 'mono') {
-        if (activeNotes.length > 1) {
-          this.updateSources(note.note);
-        } else {
-          this.startSources(note.note);
-        }
-      }
+      this[this.settings.get('mode') + 'Start'](note, activeNotes);
     },
     dispatchStop: function(note, activeNotes) {
-      if (this.settings.get('mode') === 'mono') {
-        if (activeNotes.length) {
-          this.updateSources(activeNotes[activeNotes.length - 1]);
-        } else {
-          this.stopSources(note.note);
-        }
+      this[this.settings.get('mode') + 'Stop'](note, activeNotes);
+    },
+    monoStart: function(note, activeNotes) {
+      if (activeNotes.length > 1) {
+        this.updateSources(note.note);
+      } else {
+        this.startSources(note.note);
+      }
+    },
+    monoStop: function(note, activeNotes) {
+      if (activeNotes.length) {
+        this.updateSources(activeNotes[activeNotes.length - 1]);
+      } else {
+        this.stopSources(note.note);
       }
     },
     getFrequency: function(note) {
