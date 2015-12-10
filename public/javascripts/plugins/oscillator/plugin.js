@@ -12,8 +12,6 @@ define([
 ], function($, _, Backbone, context, Settings, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
-    node: null,
-    connections: null,
     template: template,
     bindings: {
       '[data-active]': 'isActive',
@@ -24,7 +22,7 @@ define([
     initialize: function() {
       this.settings = new Settings();
 
-      this.connections = [];
+      this.nodes = {};
     },
     render: function() {
       this.$el.html(this.template());
@@ -33,33 +31,36 @@ define([
 
       return this;
     },
-    addConnections: function() {
+    addConnections: function(node) {
       _.each(this.data.connections, function(node) {
-        this.node.connect(node)
+        node.connect(node)
       }, this);
     },
     play: function(frequency) {
-      log('play', frequency);
+      var node;
+
       
       if (this.settings.get('isActive')) {
-        this.stop();
+        this.stop(frequency);
 
-        this.node = context.createOscillator();
-        this.node.type = this.settings.get('wave');
-        this.node.frequency.value = frequency;
-        this.addConnections();
-        this.node.start(0);
+        node = context.createOscillator();
+        node.type = this.settings.get('wave');
+        node.frequency.value = frequency;
+        this.addConnections(node);
+        node.start(0);
+
+        this.nodes[frequency] = node;
+        
+        log('play', frequency, this.nodes);
       }
     },
-    update: function(frequency) {
-      log('update', frequency);
-      this.node.frequency.value = frequency;
-    },
-    stop: function() {
-      if (this.node) {
-        this.node.stop(0);
+    stop: function(frequency) {
+      var node = this.nodes[frequency];
+      
+      if (node) {
+        node.stop(0);
         
-        this.node = null;
+        delete this.nodes[frequency];
       }
     }
   });

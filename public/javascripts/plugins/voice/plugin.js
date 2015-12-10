@@ -31,15 +31,11 @@ define([
       this[this.settings.get('mode') + 'Stop'](note, activeNotes);
     },
     monoStart: function(note, activeNotes) {
-      if (activeNotes.length > 1) {
-        this.updateSources(note.note);
-      } else {
-        this.startSources(note.note);
-      }
+      this.startSources(note.note);
     },
     monoStop: function(note, activeNotes) {
       if (activeNotes.length) {
-        this.updateSources(activeNotes[activeNotes.length - 1]);
+        this.monoStart(activeNotes[activeNotes.length - 1], activeNotes);
       } else {
         this.stopSources(note.note);
       }
@@ -52,14 +48,9 @@ define([
         source.play(this.getFrequency(note));
       }, this);
     },
-    updateSources: function(note) {
+    stopSources: function(note) {
       _.each(this.data.sources, function(source) {
-        source.update(this.getFrequency(note));
-      }, this);
-    },
-    stopSources: function() {
-      _.each(this.data.sources, function(source) {
-        source.stop();
+        source.stop(this.getFrequency(note));
       }, this);
     }
   });
