@@ -53,8 +53,8 @@ define([
         }
       }
 
-      if (midiEvent && !this.isActiveNote(midiEvent.note)) {
-        this.addActiveNote(midiEvent.note);
+      if (midiEvent && !this.isActiveNote(midiEvent)) {
+        this.addActiveNote(midiEvent);
         this.trigger('note:start', midiEvent, this.activeNotes);
       }
     },
@@ -77,21 +77,27 @@ define([
         }
       }
 
-      if (midiEvent && this.isActiveNote(midiEvent.note)) {
-        this.removeActiveNote(midiEvent.note);
+      if (midiEvent && this.isActiveNote(midiEvent)) {
+        this.removeActiveNote(midiEvent);
         this.trigger('note:stop', midiEvent, this.activeNotes);
       }
     },
-    isActiveNote: function(note) {
-      return this.activeNotes.indexOf(note) > -1;
+    isActiveNote: function(midiEvent) {
+      return _.findWhere(this.activeNotes, {
+        note: midiEvent.note
+      });
     },
-    addActiveNote: function(note) {
-      this.activeNotes.push(note);
+    addActiveNote: function(midiEvent) {
+      this.activeNotes.push(midiEvent);
     },
-    removeActiveNote: function(note) {
-      var index = this.activeNotes.indexOf(note);
+    removeActiveNote: function(midiEvent) {
+      var index = _.findIndex(this.activeNotes, {
+        note: midiEvent.note
+      });
 
-      this.activeNotes.splice(index, 1);
+      if (index > -1) {
+        this.activeNotes.splice(index, 1);
+      }
     }
   });
 
