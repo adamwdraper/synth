@@ -21,6 +21,8 @@ define([
       // this.$el.html(this.template());
 
       this.settings = new Settings();
+
+      this.monoActiveNote = null;
       
       return this;
     },
@@ -35,13 +37,21 @@ define([
         this.stopSources(_.last(activeNotes));
       }
 
+      this.monoActiveNote = note;
+
       this.startSources(note);
     },
     monoStop: function(note, activeNotes) {
+      var nextNote = _.last(activeNotes);
+
+      log('stop', note, nextNote, this.monoActiveNote);
+
       this.stopSources(note);
 
-      if (activeNotes.length) {
-        this.startSources(_.last(activeNotes));
+      if (nextNote && nextNote.frequency !== this.monoActiveNote.frequency) {
+        this.monoActiveNote = nextNote;
+
+        this.startSources(nextNote);
       }
     },
     polyStart: function(note, activeNotes) {
