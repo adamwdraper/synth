@@ -17,7 +17,7 @@ define([
     initialize: function() {},
     render: function() {
       this.listenTo(this.data.input, 'note:start', this.dispatchStart);
-      this.listenTo(this.data.input, 'note:stop', this.stopSources);
+      this.listenTo(this.data.input, 'note:stop', this.dispatchStop);
       // this.$el.html(this.template());
 
       this.settings = new Settings();
@@ -27,11 +27,18 @@ define([
     dispatchStart: function(note, activeNotes) {
       if (this.settings.get('mode') === 'mono') {
         if (activeNotes.length > 1) {
-          log('update', note.note, activeNotes);
-          this.updateSources(note);
+          this.updateSources(note.note);
         } else {
-          log('start', note.note, activeNotes);
-          this.startSources(note);
+          this.startSources(note.note);
+        }
+      }
+    },
+    dispatchStop: function(note, activeNotes) {
+      if (this.settings.get('mode') === 'mono') {
+        if (activeNotes.length) {
+          this.updateSources(activeNotes[activeNotes.length - 1]);
+        } else {
+          this.stopSources(note.note);
         }
       }
     },
@@ -40,12 +47,12 @@ define([
     },
     startSources: function(note) {
       _.each(this.data.sources, function(source) {
-        source.play(this.getFrequency(note.note));
+        source.play(this.getFrequency(note));
       }, this);
     },
     updateSources: function(note) {
       _.each(this.data.sources, function(source) {
-        source.update(midi.noteNumberToFrequency(note.note));
+        source.update(this.getFrequency(note));
       }, this);
     },
     stopSources: function() {

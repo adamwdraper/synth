@@ -39,7 +39,7 @@ define([
       }, this);
     },
     play: function(frequency) {
-      log('play');
+      log('play', frequency);
       
       if (this.settings.get('isActive')) {
         this.stop();
@@ -52,6 +52,7 @@ define([
       }
     },
     update: function(frequency) {
+      log('update', frequency);
       this.node.frequency.value = frequency;
     },
     stop: function() {
