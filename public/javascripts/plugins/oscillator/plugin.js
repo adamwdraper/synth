@@ -32,14 +32,13 @@ define([
       return this;
     },
     addConnections: function(node) {
-      _.each(this.data.connections, function(node) {
-        node.connect(node)
+      _.each(this.data.connections, function(connection) {
+        node.connect(connection);
       }, this);
     },
     play: function(frequency) {
       var node;
 
-      
       if (this.settings.get('isActive')) {
         this.stop(frequency);
 
@@ -50,8 +49,8 @@ define([
         node.start(0);
 
         this.nodes[frequency] = node;
-        
-        log('play', frequency, this.nodes);
+
+        log('oscillator', 'play', node, this.nodes);
       }
     },
     stop: function(frequency) {
@@ -61,6 +60,8 @@ define([
         node.stop(0);
         
         delete this.nodes[frequency];
+
+        log('oscillator', 'stop', node, this.nodes);
       }
     }
   });

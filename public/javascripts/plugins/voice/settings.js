@@ -3,7 +3,7 @@ define([
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
     defaults: {
-      mode: 'mono'
+      mode: 'poly'
     }
   });
 
