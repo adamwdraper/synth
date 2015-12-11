@@ -67,13 +67,11 @@ define([
       this.stopSources(note);
     },
     startSources: function(note) {
-      log('voice', 'start', note);
       _.each(this.data.sources, function(source) {
         source.play(note.frequency);
       }, this);
     },
     stopSources: function(note) {
-      log('voice', 'stop', note);
       _.each(this.data.sources, function(source) {
         source.stop(note.frequency);
       }, this);

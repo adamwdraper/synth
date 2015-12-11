@@ -8,12 +8,13 @@ define([
   'backbone',
   'utilities/context/utility',
   'utilities/keyboard/utility',
+  'plugins/amp-envelope/plugin',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
   'plugins/voice/plugin',
   'plugins/volume/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, keyboard, Oscilliscope, Oscillator, Voice, Volume, template) {
+], function($, _, Backbone, context, keyboard, AmpEnvelope, Oscilliscope, Oscillator, Voice, Volume, template) {
   var View = Backbone.View.extend({
     template: template,
     instrument: null,
@@ -39,9 +40,16 @@ define([
         ]
       });
 
-      this.initializeSource('oscillator', Oscillator, {
+      // Amp Envelope
+      this.initializeModule('ampEnvelope', AmpEnvelope, {
         connections: [
           this.modules.master.node
+        ]
+      });
+
+      this.initializeSource('oscillator', Oscillator, {
+        connections: [
+          this.modules.ampEnvelope.node
         ]
       });
 
