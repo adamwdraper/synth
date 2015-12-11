@@ -1,5 +1,5 @@
 /**
- * @appular plugin
+ * @appular trigger
  */
 define([
   'jquery',
@@ -78,5 +78,5 @@ define([
     }
   });
 
-  return View;
+  return new View();
 });
