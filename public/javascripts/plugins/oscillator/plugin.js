@@ -7,9 +7,10 @@ define([
   'underscore',
   'backbone',
   'utilities/context/utility',
+  'utilities/trigger/utility',
   './settings',
   'template!./template.html'
-], function($, _, Backbone, context, Settings, template) {
+], function($, _, Backbone, context, trigger, Settings, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     template: template,
@@ -21,6 +22,9 @@ define([
     events: {},
     initialize: function() {
       this.settings = new Settings();
+
+      this.listenTo(trigger, 'note:start', this.play);
+      this.listenTo(trigger, 'note:stop', this.stop);
 
       this.nodes = {};
     },
@@ -36,30 +40,30 @@ define([
         node.connect(connection);
       }, this);
     },
-    play: function(frequency) {
+    play: function(note) {
       var node;
 
       if (this.settings.get('isActive')) {
-        this.stop(frequency);
+        this.stop(note.frequency);
 
         node = context.createOscillator();
         node.type = this.settings.get('wave');
-        node.frequency.value = frequency;
+        node.frequency.value = note.frequency;
         this.addConnections(node);
         node.start(0);
 
-        this.nodes[frequency] = node;
+        this.nodes[note.frequency] = node;
 
         log('oscillator', 'play', node, this.nodes);
       }
     },
-    stop: function(frequency) {
-      var node = this.nodes[frequency];
+    stop: function(note) {
+      var node = this.nodes[note.frequency];
       
       if (node) {
         node.stop(0);
         
-        delete this.nodes[frequency];
+        delete this.nodes[note.frequency];
 
         log('oscillator', 'stop', node, this.nodes);
       }

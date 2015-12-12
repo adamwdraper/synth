@@ -8,18 +8,17 @@ define([
   'backbone',
   'utilities/context/utility',
   'utilities/keyboard/utility',
+  'utilities/trigger/utility',
   'plugins/amp-envelope/plugin',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
-  'plugins/voice/plugin',
   'plugins/volume/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, keyboard, AmpEnvelope, Oscilliscope, Oscillator, Voice, Volume, template) {
+], function($, _, Backbone, context, keyboard, trigger, AmpEnvelope, Oscilliscope, Oscillator, Volume, template) {
   var View = Backbone.View.extend({
     template: template,
     instrument: null,
-    modules: {},
-    sources: {},
+    voice: {},
     bindings: {},
     listeners: {},
     events: {},
@@ -35,7 +34,7 @@ define([
       // Master Volume
       this.initializeModule('master', Volume, {
         connections: [
-          this.modules.oscilliscope.node,
+          this.voice.oscilliscope.node,
           context.destination
         ]
       });
@@ -43,51 +42,35 @@ define([
       // Amp Envelope
       this.initializeModule('ampEnvelope', AmpEnvelope, {
         connections: [
-          this.modules.master.node
+          this.voice.master.node
         ]
       });
 
-      this.initializeSource('oscillator', Oscillator, {
+      this.initializeModule('oscillator', Oscillator, {
         connections: [
-          this.modules.ampEnvelope.node
+          this.voice.ampEnvelope.node
         ]
       });
 
-      // Voice
-      this.voice = new Voice({
-        input: keyboard,
-        sources: this.sources 
-      });
+      trigger.connectInstrament(keyboard);
 
       this.renderAll();
 
       return this;
     },
-    initializeModule: function(name, Module, options) {
-      return this.initializeView('module', name, Module, options);
-    },
-    initializeSource: function(name, Source, options) {
-      return this.initializeView('source', name, Source, options);
-    },
-    initializeView: function(type, name, View, options) {
+    initializeModule: function(name, View, options) {
       var view;
 
       options = options || {};
 
       view = new View(options);
 
-      this[type + 's'][name] = view;
+      this.voice[name] = view;
 
       return view;
     },
     renderAll: function() {
-      this.$modules.append(this.voice.render().$el);
-
-      _.each(this.sources, function(source) {
-        this.$modules.append(source.render().$el);
-      }, this);
-      
-      _.each(this.modules, function(module) {
+      _.each(this.voice, function(module) {
         this.$modules.append(module.render().$el);
       }, this);
     }
