@@ -44,8 +44,6 @@ define([
     monoStop: function(note, activeNotes) {
       var nextNote = _.last(activeNotes);
 
-      log('stop', note, nextNote, this.monoActiveNote);
-
       this.triggerStop(note);
 
       if (nextNote && nextNote.frequency !== this.monoActiveNote.frequency) {
@@ -62,9 +60,13 @@ define([
     },
     triggerStart: function(note) {
       this.trigger('note:on', note);
+
+      log('trigger', 'on', note);
     },
     triggerStop: function(note) {
       this.trigger('note:off', note);
+      
+      log('trigger', 'off', note);
     }
   });
 

@@ -53,8 +53,6 @@ define([
         node.start(0);
 
         this.nodes[note.frequency] = node;
-
-        log('oscillator', 'play', node, this.nodes);
       }
     },
     stop: function(note) {
@@ -64,8 +62,6 @@ define([
         node.stop(0);
         
         delete this.nodes[note.frequency];
-
-        log('oscillator', 'stop', node, this.nodes);
       }
     }
   });
