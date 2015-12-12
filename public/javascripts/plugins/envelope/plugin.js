@@ -36,8 +36,8 @@ define([
     initialize: function() {
       this.settings = new Settings();
 
-      this.listenTo(trigger, 'note:on', this.play);
-      this.listenTo(trigger, 'note:off', this.stop);
+      this.listenTo(trigger, 'note:on', this.attack);
+      this.listenTo(trigger, 'note:off', this.release);
     },
     render: function() {
       this.$el.html(this.template());
@@ -46,12 +46,26 @@ define([
       
       return this;
     },
-    play: function() {
+    attack: function() {
       var now = context.currentTime;
+
+      this.data.param.cancelScheduledValues( now );
 
       this.data.param.setValueAtTime(0, now);
 
+      // attack
       this.data.param.linearRampToValueAtTime(1.0, now + this.settings.get('attack'));
+
+      // decay to sustain
+      this.data.param.linearRampToValueAtTime(this.settings.get('sustain'), now + this.settings.get('attack') + this.settings.get('decay'));
+    },
+    release: function() {
+      var now = context.currentTime;
+
+      this.data.param.cancelScheduledValues( now );
+
+      // release
+      this.data.param.linearRampToValueAtTime(0, now + this.settings.get('release'));
     },
     formatValue: function(value) {
       return Number(value);

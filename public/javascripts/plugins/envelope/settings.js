@@ -5,7 +5,7 @@ define([
     defaults: {
       attack: 0,
       decay: 0,
-      sustain: 0,
+      sustain: 1,
       release: 0
     }
   });
