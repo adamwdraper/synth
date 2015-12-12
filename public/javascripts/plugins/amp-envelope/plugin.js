@@ -6,9 +6,10 @@ define([
   'underscore',
   'backbone',
   'utilities/context/utility',
+  'utilities/trigger/utility',
   'plugins/envelope/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, Envelope, template) {
+], function($, _, Backbone, context, trigger, Envelope, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     node: null,
@@ -18,6 +19,9 @@ define([
     events: {},
     initialize: function() {
       this.node = context.createGain();
+
+      this.listenTo(trigger, 'note:on', this.play);
+      this.listenTo(trigger, 'note:off', this.stop);
     },
     render: function() {
       this.$el.html(this.template());
@@ -35,6 +39,9 @@ define([
       _.each(this.data.connections, function(node) {
         this.node.connect(node)
       }, this);
+    },
+    play: function() {
+      
     }
   });
 

@@ -52,7 +52,7 @@ define([
       }
 
       if (note && !this.isActiveNote(note)) {
-        this.trigger('note:start', note, this.activeNotes);
+        this.trigger('note:on', note, this.activeNotes);
         this.addActiveNote(note);
       }
     },
@@ -74,7 +74,7 @@ define([
 
       if (note && this.isActiveNote(note)) {
         this.removeActiveNote(note);
-        this.trigger('note:stop', note, this.activeNotes);
+        this.trigger('note:off', note, this.activeNotes);
       }
     },
     buildNote: function(event, options) {

@@ -19,8 +19,8 @@ define([
     events: {},
     initialize: function() {},
     render: function() {
-      this.listenTo(this.data.input, 'note:start', this.dispatchStart);
-      this.listenTo(this.data.input, 'note:stop', this.dispatchStop);
+      this.listenTo(this.data.input, 'note:on', this.dispatchStart);
+      this.listenTo(this.data.input, 'note:off', this.dispatchStop);
       
       this.monoActiveNote = null;
 

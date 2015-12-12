@@ -23,8 +23,8 @@ define([
     initialize: function() {
       this.settings = new Settings();
 
-      this.listenTo(trigger, 'note:start', this.play);
-      this.listenTo(trigger, 'note:stop', this.stop);
+      this.listenTo(trigger, 'note:on', this.play);
+      this.listenTo(trigger, 'note:off', this.stop);
 
       this.nodes = {};
     },

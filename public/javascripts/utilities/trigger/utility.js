@@ -23,8 +23,8 @@ define([
     connectInstrament: function(instrament) {
       this.instrament = instrament;
 
-      this.listenTo(this.instrament, 'note:start', this.dispatchStart);
-      this.listenTo(this.instrament, 'note:stop', this.dispatchStop);
+      this.listenTo(this.instrament, 'note:on', this.dispatchStart);
+      this.listenTo(this.instrament, 'note:off', this.dispatchStop);
     },
     dispatchStart: function(note, activeNotes) {
       this[this.settings.get('mode') + 'Start'](note, activeNotes);
@@ -61,10 +61,10 @@ define([
       this.triggerStop(note);
     },
     triggerStart: function(note) {
-      this.trigger('note:start', note);
+      this.trigger('note:on', note);
     },
     triggerStop: function(note) {
-      this.trigger('note:stop', note);
+      this.trigger('note:off', note);
     }
   });
 
