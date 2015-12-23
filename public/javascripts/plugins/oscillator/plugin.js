@@ -24,7 +24,6 @@ define([
       this.settings = new Settings();
 
       this.listenTo(trigger, 'note:on', this.play);
-      this.listenTo(trigger, 'note:off', this.stop);
 
       this.nodes = {};
     },
