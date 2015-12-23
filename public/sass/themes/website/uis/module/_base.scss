@@ -14,4 +14,9 @@
   margin: .5em;
   border: 1px solid $color-gray-lighterest;
   border-radius: .15em;
+
+  h1 {
+    font-size: $size-font-size-large;
+    margin-top: 0;
+  }
 }
