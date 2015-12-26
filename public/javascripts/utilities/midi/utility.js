@@ -15,7 +15,7 @@ define(function() {
     'A#',
     'B'
   ];
-  var getBaseLog = function (value, base) {
+  var getBaseLog = function(value, base) {
     return Math.log(value) / Math.log(base);
   };
   var i;
