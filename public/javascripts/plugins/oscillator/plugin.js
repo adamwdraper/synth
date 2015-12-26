@@ -6,11 +6,10 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'utilities/context/utility',
-  'utilities/trigger/utility',
   './settings',
+  './node',
   'template!./template.html'
-], function($, _, Backbone, context, trigger, Settings, template) {
+], function($, _, Backbone, Settings, Node, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     template: template,
@@ -23,9 +22,9 @@ define([
     initialize: function() {
       this.settings = new Settings();
 
-      this.listenTo(trigger, 'note:on', this.play);
+      Node.prototype.settings = this.settings;
 
-      this.nodes = {};
+      this.node = Node;
     },
     render: function() {
       this.$el.html(this.template());
@@ -33,35 +32,6 @@ define([
       this.stickit(this.settings);
 
       return this;
-    },
-    addConnections: function(node) {
-      _.each(this.data.connections, function(connection) {
-        node.connect(connection);
-      }, this);
-    },
-    play: function(note) {
-      var node;
-
-      if (this.settings.get('isActive')) {
-        this.stop(note.frequency);
-
-        node = context.createOscillator();
-        node.type = this.settings.get('wave');
-        node.frequency.value = note.frequency;
-        this.addConnections(node);
-        node.start(0);
-
-        this.nodes[note.frequency] = node;
-      }
-    },
-    stop: function(note) {
-      var node = this.nodes[note.frequency];
-      
-      if (node) {
-        node.stop(0);
-        
-        delete this.nodes[note.frequency];
-      }
     }
   });
 

@@ -18,7 +18,8 @@ define([
   var View = Backbone.View.extend({
     template: template,
     instrument: null,
-    voice: {},
+    modules: [],
+    voices: {},
     bindings: {},
     listeners: {},
     events: {},
@@ -28,51 +29,88 @@ define([
 
       this.$modules = this.$el.find('[data-modules]');
 
-      // Analyzer
-      this.initializeModule('oscilliscope', Oscilliscope);
+      // // Analyzer
+      // this.initializeModule('oscilliscope', Oscilliscope);
 
       // Master Volume
-      this.initializeModule('master', Volume, {
-        connections: [
-          this.voice.oscilliscope.node,
-          context.destination
-        ]
-      });
+      // this.initializeModule('master', Volume, {
+      //   connections: [
+      //     context.destination
+      //   ]
+      // });
 
       // Amp Envelope
-      this.initializeModule('ampEnvelope', AmpEnvelope, {
-        connections: [
-          this.voice.master.node
-        ]
-      });
+      // this.initializeModule('ampEnvelope', AmpEnvelope, {
+      //   connections: [
+      //     this.voice.master.node
+      //   ]
+      // });
 
-      this.initializeModule('oscillator', Oscillator, {
-        connections: [
-          this.voice.ampEnvelope.node
-        ]
-      });
+      this.renderModule('oscillator', Oscillator, [
+        context.destination
+      ]);
 
       trigger.connectInstrament(keyboard);
-
-      this.renderAll();
+      this.listenTo(trigger, 'note:on', this.createVoice);
 
       return this;
     },
-    initializeModule: function(name, View, options) {
+    renderModule: function(name, View, connections) {
       var view;
 
-      options = options || {};
+      connections = connections || [];
 
-      view = new View(options);
+      view = new View({
+        connections: connections
+      }).render();
 
-      this.voice[name] = view;
+      this.$modules.append(view.render().$el);
+
+      this.modules.push({
+        id: name,
+        view: view,
+        node: view.node,
+        connections: connections
+      });
 
       return view;
     },
-    renderAll: function() {
-      _.each(this.voice, function(module) {
-        this.$modules.append(module.render().$el);
-      }, this);
+    createVoice: function(note) {
+      var voice = [];
+      var i;
+      var module
+      var node;
+      var x;
+
+      log(this.modules);
+
+      // create all nodes
+      for(i = this.modules.length; i-- > 0;) {
+        module = this.modules[i];
+        
+        node = new module.node();
+
+        // create node
+        node.create();
+
+        // make connections
+        for(x = 0; x < module.connections.length; x++) {
+          node.addConnection(module.connections[x]);
+        }
+
+        // add to voice
+        voice.unshift(node);
+      }
+
+      log(voice);
+
+      // trigger play
+      for(i = voice.length; i > 0; i--) {
+        node.trigger('note:on', note);
+      }
+
+      // store voice by note
+      this.voices[note.number] = voice;
     }
   });
 
