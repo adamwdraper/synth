@@ -49,7 +49,7 @@ define([
     attack: function() {
       var now = context.currentTime;
 
-      this.data.param.cancelScheduledValues(now);
+      this.data.param.cancelScheduledValues( now );
 
       this.data.param.setValueAtTime(0, now);
 
@@ -62,10 +62,10 @@ define([
     release: function() {
       var now = context.currentTime;
 
+      this.data.param.cancelScheduledValues( now );
+
       // release
       this.data.param.linearRampToValueAtTime(0, now + this.settings.get('release'));
-
-
     },
     formatValue: function(value) {
       return Number(value);

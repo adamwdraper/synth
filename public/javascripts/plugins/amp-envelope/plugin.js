@@ -18,6 +18,7 @@ define([
     events: {},
     initialize: function() {
       this.node = context.createGain();
+
     },
     render: function() {
       this.$el.html(this.template());
@@ -26,8 +27,15 @@ define([
         el: this.$el.find('[data-envelope]'),
         param: this.node.gain
       }).render();
+
+      this.addConnections();
       
       return this;
+    },
+    addConnections: function() {
+      _.each(this.data.connections, function(node) {
+        this.node.connect(node)
+      }, this);
     }
   });
 
