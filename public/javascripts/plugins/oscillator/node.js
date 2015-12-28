@@ -9,7 +9,6 @@ define([
   'utilities/context/utility'
 ], function($, _, Backbone, context) {
   var View = Backbone.View.extend({
-    node: null,
     bindings: {},
     listeners: {
       'note:on': 'play'

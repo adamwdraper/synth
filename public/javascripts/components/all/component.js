@@ -13,31 +13,36 @@ define([
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
   'plugins/volume/plugin',
+  './modules',
+  './voices',
   'template!./template.html'
-], function($, _, Backbone, context, keyboard, trigger, AmpEnvelope, Oscilliscope, Oscillator, Volume, template) {
+], function($, _, Backbone, context, keyboard, trigger, AmpEnvelope, Oscilliscope, Oscillator, Volume, Modules, Voices, template) {
   var View = Backbone.View.extend({
     template: template,
     instrument: null,
-    modules: [],
-    voices: {},
     bindings: {},
     listeners: {},
     events: {},
-    initialize: function() {},
+    initialize: function() {
+      this.modules = new Modules();
+      this.voices = new Voices();
+    },
     render: function() {
       this.$el.html(this.template());
 
       this.$modules = this.$el.find('[data-modules]');
 
-      // // Analyzer
-      // this.initializeModule('oscilliscope', Oscilliscope);
+      // Analyzer
+      // this.renderModule('oscilliscope', Oscilliscope);
+
+      this.renderModule('oscillator', Oscillator, [
+        'master'
+      ]);
 
       // Master Volume
-      // this.initializeModule('master', Volume, {
-      //   connections: [
-      //     context.destination
-      //   ]
-      // });
+      this.renderModule('master', Volume, [
+        context.destination
+      ]);
 
       // Amp Envelope
       // this.initializeModule('ampEnvelope', AmpEnvelope, {
@@ -45,10 +50,6 @@ define([
       //     this.voice.master.node
       //   ]
       // });
-
-      this.renderModule('oscillator', Oscillator, [
-        context.destination
-      ]);
 
       trigger.connectInstrament(keyboard);
       this.listenTo(trigger, 'note:on', this.createVoice);
@@ -66,7 +67,7 @@ define([
 
       this.$modules.append(view.render().$el);
 
-      this.modules.push({
+      this.modules.add({
         id: name,
         view: view,
         node: view.node,
@@ -76,41 +77,64 @@ define([
       return view;
     },
     createVoice: function(note) {
-      var voice = [];
+      var voice = {};
       var i;
       var module
       var node;
-      var x;
-
-      log(this.modules);
+      var id;
 
       // create all nodes
-      for(i = this.modules.length; i-- > 0;) {
-        module = this.modules[i];
-        
-        node = new module.node();
+      for(i = 0; i < this.modules.length; i++) {
+        module = this.modules.at(i);
 
-        // create node
-        node.create();
-
-        // make connections
-        for(x = 0; x < module.connections.length; x++) {
-          node.addConnection(module.connections[x]);
-        }
+        node = this.createNode(module);
 
         // add to voice
-        voice.unshift(node);
+        voice[module.id] = node;
       }
 
-      log(voice);
+      for(i = 0; i < this.modules.length; i++) {
+        module = this.modules.at(i);
+
+      }
+
+      // add connections
+      for(id in voice) {
+        this.addConnections(this.modules.get(id), voice[id], voice);
+      }
 
       // trigger play
-      for(i = voice.length; i > 0; i--) {
-        node.trigger('note:on', note);
+      for(id in voice) {
+        voice[id].trigger('note:on', note);
       }
 
       // store voice by note
-      this.voices[note.number] = voice;
+      this.voices.add({
+        id: note.number,
+        modules: voice
+      });
+    },
+    createNode: function(module) {
+      var Node = module.get('node');
+      var node = new Node();
+
+      node.create();
+
+      return node;
+    },
+    addConnections: function(module, node, voice) {
+      var connections = module.get('connections');
+      var connection;
+      var i;
+
+      // make connections
+      for(i = 0; i < connections.length; i++) {
+        connection = _.isString(connections[i]) ? voice[connections[i]].node : connections[i];
+
+        log('connecting', node, connection);
+
+        node.addConnection(connection);
+      }
     }
   });
 
