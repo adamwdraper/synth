@@ -7,8 +7,9 @@ define([
   'backbone',
   'utilities/context/utility',
   'plugins/envelope/plugin',
+  './node',
   'template!./template.html'
-], function($, _, Backbone, context, Envelope, template) {
+], function($, _, Backbone, context, Envelope, Node, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
     node: null,
@@ -17,25 +18,18 @@ define([
     listeners: {},
     events: {},
     initialize: function() {
-      this.node = context.createGain();
-
+      this.node = Node;
     },
     render: function() {
       this.$el.html(this.template());
 
       this.plugins.envelope = new Envelope({
-        el: this.$el.find('[data-envelope]'),
-        param: this.node.gain
+        el: this.$el.find('[data-envelope]')
       }).render();
 
-      this.addConnections();
+      Node.prototype.envelope = this.plugins.envelope.envelope;
       
       return this;
-    },
-    addConnections: function() {
-      _.each(this.data.connections, function(node) {
-        this.node.connect(node)
-      }, this);
     }
   });
 

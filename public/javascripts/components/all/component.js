@@ -36,6 +36,11 @@ define([
       // this.renderModule('oscilliscope', Oscilliscope);
 
       this.renderModule('oscillator', Oscillator, [
+        'ampEnvelope'
+      ]);
+
+      // Amp Envelope
+      this.renderModule('ampEnvelope', AmpEnvelope, [
         'master'
       ]);
 
@@ -44,15 +49,9 @@ define([
         context.destination
       ]);
 
-      // Amp Envelope
-      // this.initializeModule('ampEnvelope', AmpEnvelope, {
-      //   connections: [
-      //     this.voice.master.node
-      //   ]
-      // });
-
       trigger.connectInstrament(keyboard);
       this.listenTo(trigger, 'note:on', this.createVoice);
+      this.listenTo(trigger, 'note:off', this.offVoice);
 
       return this;
     },
@@ -93,17 +92,12 @@ define([
         voice[module.id] = node;
       }
 
-      for(i = 0; i < this.modules.length; i++) {
-        module = this.modules.at(i);
-
-      }
-
-      // add connections
+      // connect voice nodes
       for(id in voice) {
         this.addConnections(this.modules.get(id), voice[id], voice);
       }
 
-      // trigger play
+      // trigger play on voice nodes
       for(id in voice) {
         voice[id].trigger('note:on', note);
       }
@@ -113,6 +107,15 @@ define([
         id: note.number,
         modules: voice
       });
+    },
+    offVoice: function(note) {
+      var voice = this.voices.get(note.number);
+      var modules = voice.get('modules');
+
+      // trigger play on voice nodes
+      for(id in modules) {
+        modules[id].trigger('note:off', note);
+      }
     },
     createNode: function(module) {
       var Node = module.get('node');
@@ -131,7 +134,7 @@ define([
       for(i = 0; i < connections.length; i++) {
         connection = _.isString(connections[i]) ? voice[connections[i]].node : connections[i];
 
-        log('connecting', node, connection);
+        log('connecting', module.id, node.node, connection);
 
         node.addConnection(connection);
       }
