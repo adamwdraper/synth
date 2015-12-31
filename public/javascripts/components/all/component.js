@@ -1,7 +1,3 @@
-/**
- * @appular boilerplate
- */
-
 define([
   'jquery',
   'underscore',
@@ -95,6 +91,13 @@ define([
       // connect voice nodes
       for(id in voice) {
         this.addConnections(this.modules.get(id), voice[id], voice);
+      }
+
+      // trigger off on same note
+      if(this.voices.get(note.number)) {
+        this.offVoice(note);
+
+        this.voices.remove(note.number);
       }
 
       // trigger play on voice nodes

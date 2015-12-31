@@ -1,7 +1,3 @@
-/**
- * @appular boilerplate
- */
-
 define([
   'jquery',
   'underscore',

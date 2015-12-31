@@ -1,6 +1,3 @@
-/**
- * @appular plugin
- */
 define([
   'jquery',
   'underscore',
@@ -9,38 +6,55 @@ define([
 ], function($, _, Backbone, context) {
   var View = Backbone.View.extend({
     node: null,
+    decayTimeout: null,
     bindings: {},
     listeners: {
       'note:on': 'attack',
       'note:off': 'release'
     },
     events: {},
-    initialize: function() {},
+    initialize: function() {
+      _.bindAll(this, 'decay');
+    },
     create: function() {
       this.node = context.createGain();
+
+      this.node.gain.setValueAtTime(0, context.currentTime);
     },
     addConnection: function(node) {
       this.node.connect(node);
     },
     attack: function() {
-      log('attack');
       var now = context.currentTime;
+      var attack = this.settings.get('attack');
 
-      this.node.gain.cancelScheduledValues(now);
-
-      this.node.gain.setValueAtTime(0, now);
+      log('attack', attack);
 
       // attack
-      this.node.gain.linearRampToValueAtTime(1.0, now + this.settings.get('attack'));
+      this.node.gain.linearRampToValueAtTime(1.0, now + attack);
+            
+      this.decayTimeout = setTimeout(this.decay, attack * 1000);
+    },
+    decay: function() {
+      var now = context.currentTime;
+      var decay = this.settings.get('decay');
+
+      log('decay', decay, 'to', this.settings.get('sustain'));
 
       // decay to sustain
-      this.node.gain.linearRampToValueAtTime(this.settings.get('sustain'), now + this.settings.get('attack') + this.settings.get('decay'));
+      this.node.gain.linearRampToValueAtTime(this.settings.get('sustain'), now + decay);
     },
     release: function() {
-      log('release');
       var now = context.currentTime;
+      var release = this.settings.get('release');
 
-      this.node.gain.cancelScheduledValues(now);
+      clearTimeout(this.decayTimeout);
+
+      log('release', release, this.decayTimeout);
+
+      log(this.node.gain.value);
+      // this.node.gain.cancelScheduledValues(now);
+      // log(this.node.gain.value);
 
       // release
       this.node.gain.linearRampToValueAtTime(0, now + this.settings.get('release'));

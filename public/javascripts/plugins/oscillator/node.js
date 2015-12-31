@@ -1,7 +1,3 @@
-/**
- * @appular oscillator
- */
-
 define([
   'jquery',
   'underscore',
