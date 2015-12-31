@@ -18,19 +18,32 @@ define([
     initialize: function() {},
     create: function() {
       this.node = context.createGain();
-
-      this.env = new this.envelope({
-        param: this.node.gain
-      });
     },
     addConnection: function(node) {
       this.node.connect(node);
     },
-    attack: function(note) {
-      this.env.trigger('note:on', note);
+    attack: function() {
+      log('attack');
+      var now = context.currentTime;
+
+      this.node.gain.cancelScheduledValues(now);
+
+      this.node.gain.setValueAtTime(0, now);
+
+      // attack
+      this.node.gain.linearRampToValueAtTime(1.0, now + this.settings.get('attack'));
+
+      // decay to sustain
+      this.node.gain.linearRampToValueAtTime(this.settings.get('sustain'), now + this.settings.get('attack') + this.settings.get('decay'));
     },
-    release: function(note) {
-      this.env.trigger('note:off', note);
+    release: function() {
+      log('release');
+      var now = context.currentTime;
+
+      this.node.gain.cancelScheduledValues(now);
+
+      // release
+      this.node.gain.linearRampToValueAtTime(0, now + this.settings.get('release'));
     }
   });
 

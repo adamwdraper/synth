@@ -3,8 +3,10 @@ define([
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
     defaults: {
-      min: 0,
-      max: 1
+      attack: 0,
+      decay: 0,
+      sustain: 1,
+      release: 0
     }
   });
 
