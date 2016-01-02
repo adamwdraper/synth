@@ -50,11 +50,9 @@ define([
 
       clearTimeout(this.decayTimeout);
 
-      log('release', release, this.decayTimeout);
+      log('release', release);
 
-      log(this.node.gain.value);
-      // this.node.gain.cancelScheduledValues(now);
-      // log(this.node.gain.value);
+      this.node.gain.cancelScheduledValues(now);
 
       // release
       this.node.gain.linearRampToValueAtTime(0, now + this.settings.get('release'));
