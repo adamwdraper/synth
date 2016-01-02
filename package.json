@@ -9,7 +9,9 @@
   },
   "devDependencies": {
     "gulp": "^3.9.0",
-    "gulp-sass": "^2.1.0"
+    "gulp-jshint": "^2.0.0",
+    "gulp-sass": "^2.1.0",
+    "jshint": "^2.9.1-rc2"
   },
   "scripts": {
     "start": "node ./bin/www"
@@ -17,6 +19,26 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/adamwdraper/synth.git"
+  },
+  "jshintConfig": {
+    "node": true,
+    "browser": true,
+    "curly": true,
+    "devel": true,
+    "eqeqeq": true,
+    "noarg": true,
+    "sub": true,
+    "expr": true,
+    "globals": {
+      "define": false,
+      "describe": false,
+      "it": false,
+      "assert": false,
+      "expect": false,
+      "require": false,
+      "requirejs": false
+    },
+    "strict": false
   },
   "author": "Adam Draper",
   "license": "ISC",
