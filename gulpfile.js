@@ -12,7 +12,7 @@ gulp.task('default', function() {
   // place code for your default task here
 });
 
-gulp.task('sass', function () {
+gulp.task('sass', function() {
   gulp.src('./public/sass/*.scss')
     .pipe(sass({
       outputStyle: 'compressed'
@@ -31,8 +31,14 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('sass:watch', function () {
+gulp.task('build', [
+    'lint',
+    'sass'
+]);
+
+gulp.task('sass:watch', function() {
   gulp.watch('./public/sass/**/*.scss', [
     'sass'
   ]);
 });
+
