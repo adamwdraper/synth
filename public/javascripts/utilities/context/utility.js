@@ -1,3 +1,5 @@
 define(function() {
-  return new (window.AudioContext || window.webkitAudioContext)();
+  var AudioContext = window.AudioContext || window.webkitAudioContext;
+  
+  return new AudioContext();
 });

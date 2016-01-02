@@ -74,7 +74,7 @@ define([
     createVoice: function(note) {
       var voice = {};
       var i;
-      var module
+      var module;
       var node;
       var id;
 
@@ -114,6 +114,7 @@ define([
     offVoice: function(note) {
       var voice = this.voices.get(note.number);
       var modules = voice.get('modules');
+      var id;
 
       // trigger play on voice nodes
       for(id in modules) {

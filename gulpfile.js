@@ -22,13 +22,14 @@ gulp.task('sass', function() {
 
 gulp.task('lint', function() {
   return gulp.src([
-      './public/javascripts/routers/*.js',
-      './public/javascripts/components/*.js',
-      './public/javascripts/plugins/*.js',
-      './public/javascripts/utilities/*.js'
+      './public/javascripts/routers/**/*.js',
+      './public/javascripts/components/**/*.js',
+      './public/javascripts/plugins/**/*.js',
+      './public/javascripts/utilities/**/*.js'
     ])
     .pipe(jshint(jshintConfig))
-    .pipe(jshint.reporter('default'));
+    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter('fail'));
 });
 
 gulp.task('build', [
