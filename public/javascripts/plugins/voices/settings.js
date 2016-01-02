@@ -2,7 +2,9 @@ define([
   'backbone'
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
-    defaults: {}
+    defaults: {
+      mode: 'mono'
+    }
   });
 
   return Model;

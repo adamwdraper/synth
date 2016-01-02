@@ -1,6 +1,3 @@
-/**
- * @appular plugin
- */
 define([
   'jquery',
   'underscore',

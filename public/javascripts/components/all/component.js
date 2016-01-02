@@ -1,108 +1,146 @@
-/**
- * @appular boilerplate
- */
-
 define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
+  'utilities/keyboard/utility',
+  'utilities/trigger/utility',
+  'plugins/amp-envelope/plugin',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
-  'plugins/frequency-slider/plugin',
   'plugins/volume/plugin',
-  './settings',
+  './modules',
+  './voices',
   'template!./template.html'
-], function($, _, Backbone, Oscilliscope, Oscillator, Frequency, Volume, Settings, template) {
-  var context = new (window.AudioContext || window.webkitAudioContext)();
-
+], function($, _, Backbone, context, keyboard, trigger, AmpEnvelope, Oscilliscope, Oscillator, Volume, Modules, Voices, template) {
   var View = Backbone.View.extend({
     template: template,
-    oscillators: [],
+    instrument: null,
     bindings: {},
     listeners: {},
-    events: {
-      'click [data-play]': 'togglePlaying'
-    },
+    events: {},
     initialize: function() {
-      this.settings = new Settings();
-      this.listenTo(this.settings, 'change:isPlaying', this.updatePlaying);
+      this.modules = new Modules();
+      this.voices = new Voices();
     },
     render: function() {
       this.$el.html(this.template());
 
       this.$modules = this.$el.find('[data-modules]');
 
-      this.initializeModules();
+      // Analyzer
+      // this.renderModule('oscilliscope', Oscilliscope);
 
-      this.renderModules();
+      this.renderModule('oscillator', Oscillator, [
+        'ampEnvelope'
+      ]);
+
+      // Amp Envelope
+      this.renderModule('ampEnvelope', AmpEnvelope, [
+        'master'
+      ]);
+
+      // Master Volume
+      this.renderModule('master', Volume, [
+        context.destination
+      ]);
+
+      trigger.connectInstrament(keyboard);
+      this.listenTo(trigger, 'note:on', this.createVoice);
+      this.listenTo(trigger, 'note:off', this.offVoice);
 
       return this;
     },
-    initializeModules: function() {
-      var oscillatorCount = 2;
+    renderModule: function(name, View, connections) {
+      var view;
 
-      // Analyzer
-      this.plugins.oscilliscope = new Oscilliscope({
-        context: context
+      connections = connections || [];
+
+      view = new View({
+        connections: connections
+      }).render();
+
+      this.$modules.append(view.render().$el);
+
+      this.modules.add({
+        id: name,
+        view: view,
+        node: view.node,
+        connections: connections
       });
 
-      // Master Volume
-      this.plugins.master = new Volume({
-        context: context,
-        connections: [
-          this.plugins.oscilliscope.node,
-          context.destination
-        ]
-      });
+      return view;
+    },
+    createVoice: function(note) {
+      var voice = {};
+      var i;
+      var module
+      var node;
+      var id;
 
-      // Add Oscillators
-      while (this.oscillators.length < oscillatorCount) {
-        var oscillator = new Oscillator({
-          context: context,
-          connections: [
-            this.plugins.master.node
-          ]
-        });
+      // create all nodes
+      for(i = 0; i < this.modules.length; i++) {
+        module = this.modules.at(i);
 
-        this.oscillators.push(oscillator);
+        node = this.createNode(module);
+
+        // add to voice
+        voice[module.id] = node;
       }
 
-      // Frequency Slider
-      this.plugins.frequency = new Frequency({
-        max: 4000,
-        min: 0
+      // connect voice nodes
+      for(id in voice) {
+        this.addConnections(this.modules.get(id), voice[id], voice);
+      }
+
+      // trigger off on same note
+      if(this.voices.get(note.number)) {
+        this.offVoice(note);
+
+        this.voices.remove(note.number);
+      }
+
+      // trigger play on voice nodes
+      for(id in voice) {
+        voice[id].trigger('note:on', note);
+      }
+
+      // store voice by note
+      this.voices.add({
+        id: note.number,
+        modules: voice
       });
-      this.listenTo(this.plugins.frequency.settings, 'change:frequency', this.setOscillatorFrequency);
     },
-    renderModules: function() {
-      this.$modules.append(this.plugins.oscilliscope.render().$el);
+    offVoice: function(note) {
+      var voice = this.voices.get(note.number);
+      var modules = voice.get('modules');
 
-      _.each(this.oscillators, function(oscillator) {
-        this.$modules.append(oscillator.render().$el);
-      }, this);
-      
-      this.$modules.append(this.plugins.master.render().$el);
-
-      this.$modules.append(this.plugins.frequency.render().$el);
-    },
-    togglePlaying: function() {
-      this.settings.toggle('isPlaying');
-    },
-    updatePlaying: function() {
-      if (this.settings.get('isPlaying')) {
-        _.each(this.oscillators, function(oscillator) {
-          oscillator.play();
-        });
-      } else {
-        _.each(this.oscillators, function(oscillator) {
-          oscillator.stop();
-        });
+      // trigger play on voice nodes
+      for(id in modules) {
+        modules[id].trigger('note:off', note);
       }
     },
-    setOscillatorFrequency: function(model, frequency) {
-      _.each(this.oscillators, function(oscillator) {
-        oscillator.set('frequency', frequency);
-      });
+    createNode: function(module) {
+      var Node = module.get('node');
+      var node = new Node();
+
+      node.create();
+
+      return node;
+    },
+    addConnections: function(module, node, voice) {
+      var connections = module.get('connections');
+      var connection;
+      var i;
+
+      // make connections
+      for(i = 0; i < connections.length; i++) {
+        connection = _.isString(connections[i]) ? voice[connections[i]].node : connections[i];
+
+        log('connecting', module.id, node.node, connection);
+
+        node.addConnection(connection);
+      }
     }
   });
 

@@ -3,7 +3,10 @@ define([
 ], function(Backbone) {
   var Model = Backbone.Model.extend({
     defaults: {
-      frequency: 1500
+      attack: 0,
+      decay: 0,
+      sustain: 1,
+      release: 0
     }
   });
 

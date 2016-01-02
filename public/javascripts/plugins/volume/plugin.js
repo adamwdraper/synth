@@ -5,12 +5,13 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   './settings',
+  './node',
   'template!./template.html'
-], function($, _, Backbone, Settings, template) {
+], function($, _, Backbone, context, Settings, Node, template) {
   var View = Backbone.View.extend({
     className: 'ui-module',
-    node: null,
     template: template,
     bindings: {
       '[data-volume]': 'volume'
@@ -19,28 +20,17 @@ define([
     events: {},
     initialize: function() {
       this.settings = new Settings();
-      this.listenTo(this.settings, 'change:volume', this.updateVolume);
 
-      this.node = this.data.context.createGain();
+      Node.prototype.settings = this.settings;
+
+      this.node = Node;
     },
     render: function() {
       this.$el.html(this.template());
 
-      this.addConnections();
-
       this.stickit(this.settings);
       
       return this;
-    },
-    addConnections: function() {
-      _.each(this.data.connections, function(node) {
-        this.node.connect(node)
-      }, this);
-    },
-    updateVolume: function(model, value) {
-      this.node.gain.value = value;
-
-      log(value);
     }
   });
 
