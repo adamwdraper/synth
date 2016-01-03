@@ -10,9 +10,9 @@ jshintConfig.lookup = false;
 
 gulp.src('yo').pipe(jshint(jshintConfig));
 
-gulp.task('default', function() {
-  // place code for your default task here
-});
+gulp.task('default', [
+  'sass:watch'
+]);
 
 gulp.task('sass', function() {
   gulp.src('./public/sass/*.scss')
@@ -21,7 +21,7 @@ gulp.task('sass', function() {
         outputStyle: 'compressed'
       })
       .on('error', sass.logError))
-    // .pipe(autoPrefixer())
+    .pipe(autoPrefixer())
     .pipe(sourceMaps.write('.'))
     .pipe(gulp.dest('./public/stylesheets'));
 });
