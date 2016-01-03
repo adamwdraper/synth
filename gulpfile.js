@@ -3,6 +3,8 @@ var packageJSON  = require('./package');
 var sass = require('gulp-sass');
 var jshint = require('gulp-jshint');
 var jshintConfig = packageJSON.jshintConfig;
+var sourceMaps = require('gulp-sourcemaps');
+var autoPrefixer = require('gulp-autoprefixer');
 
 jshintConfig.lookup = false;
 
@@ -14,9 +16,13 @@ gulp.task('default', function() {
 
 gulp.task('sass', function() {
   gulp.src('./public/sass/*.scss')
+    .pipe(sourceMaps.init())
     .pipe(sass({
-      outputStyle: 'compressed'
-    }).on('error', sass.logError))
+        outputStyle: 'compressed'
+      })
+      .on('error', sass.logError))
+    // .pipe(autoPrefixer())
+    .pipe(sourceMaps.write('.'))
     .pipe(gulp.dest('./public/stylesheets'));
 });
 
