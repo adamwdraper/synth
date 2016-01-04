@@ -16,7 +16,7 @@ var requirejsConfig = {
     'backbone': 'libraries/backbone/backbone',
     'backboneStickit': 'libraries/backbone/extensions/stickit',
     'domReady': 'libraries/require/plugins/domReady',
-    'jquery': 'libraries/jquery/jquery',
+    'jquery': 'empty:',
     'jqueryFunctions': 'libraries/jquery/extensions/functions',
     'log': 'libraries/log/log',
     'template': 'libraries/require/plugins/template',
@@ -52,7 +52,8 @@ var requirejsConfig = {
         'plugins/oscilliscope/plugin',
         'plugins/voices/plugin',
         'plugins/volume/plugin',
-        'components/all/component'
+        'components/all/component',
+        'routers/default/router'
       ],
       exclude: [
         'libraries/require/require'
