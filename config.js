@@ -22,7 +22,6 @@ module.exports = function() {
           main: '/javascripts/libraries/require/configs/dev'
         }
       };
-      break;
   }
 
   return config;
