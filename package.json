@@ -13,7 +13,8 @@
     "gulp-jshint": "^2.0.0",
     "gulp-sass": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
-    "jshint": "^2.8.0"
+    "jshint": "^2.8.0",
+    "requirejs": "^2.1.22"
   },
   "scripts": {
     "start": "node ./bin/www"

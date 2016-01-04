@@ -2,7 +2,7 @@
  * Prod Config Settings
  */
 requirejs.config({
-    waitSeconds: 30,
+    waitSeconds: 0,
     baseUrl: 'javascripts/build',
     config: {
         'appular': {
@@ -17,7 +17,6 @@ requirejs.config({
     },
     shim: {},
     deps: [
-        'adapter',
         'backboneStickit',
         'jqueryFunctions',
         'log',
