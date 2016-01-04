@@ -2,8 +2,11 @@ var express = require('express');
 var path = require('path');
 
 var routes = require('./routes/index');
+var Config = require('./config');
     
 var app = express();
+
+app.locals.config = new Config();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
