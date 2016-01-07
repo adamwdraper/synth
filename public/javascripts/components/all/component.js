@@ -21,9 +21,7 @@ define([
     render: function() {
       this.$el.html(this.template());
 
-      this.$synth = this.$el.find('[data-synth]');
-
-      this.$synth.append(synth.$el);
+      this.$el.find('[data-synth]').append(synth.$el);
 
       // Analyzer
       // this.renderModule('oscilliscope', Oscilliscope);
