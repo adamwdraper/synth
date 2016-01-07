@@ -2,14 +2,12 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './plugin'
-], function($, _, Backbone, Plugin) {
-  var plugin = new Plugin();
-
-  describe('Boilerplate Plugin', function() {
-    describe('Plugin', function() {
+  './utility'
+], function($, _, Backbone, trigger) {
+  describe('Trigger Utility', function() {
+    describe('Utility', function() {
       it('Exists', function() {
-        assert.ok(plugin);
+        assert.ok(trigger);
       });
     });
   });

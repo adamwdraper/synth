@@ -8,13 +8,24 @@
     "jade": "~1.11.0"
   },
   "devDependencies": {
+    "chai": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-jshint": "^2.0.0",
     "gulp-sass": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "jshint": "^2.8.0",
-    "requirejs": "^2.1.22"
+    "karma": "^0.13.18",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-mocha": "^0.2.1",
+    "karma-mocha-reporter": "^1.1.5",
+    "karma-requirejs": "^0.2.2",
+    "karma-sinon": "^1.0.4",
+    "mocha": "^2.3.4",
+    "requirejs": "^2.1.22",
+    "sinon": "^1.17.2"
   },
   "scripts": {
     "start": "node ./bin/www"

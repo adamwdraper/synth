@@ -155,7 +155,7 @@ define([
         options = options || {};
 
         // add router
-        this.router = Appular.router;
+        this.router = this.router || options.router || Appular.router;
 
         // add model when sent in so we can assign listeners to it
         if (options.model) {
@@ -321,6 +321,7 @@ define([
 
   Backbone.Router = (function(Router) {
     return Router.extend({
+      history: {},
       config: Appular.config,
       params: {},
       separators: {
@@ -388,9 +389,11 @@ define([
         }, this);
 
         // start history silently so we can load url params
-        Backbone.history.start(_.extend(this.history, {
-          silent: true
-        }));
+        if (!Backbone.History.started) {
+          Backbone.history.start(_.extend(this.history, {
+            silent: true
+          }));
+        }
 
         // load params
         this.load();

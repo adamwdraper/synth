@@ -9,10 +9,8 @@ define([
     describe('Boilerplate Component', function() {
         describe('Construction', function() {
             beforeEach(function(done) {
-                var Router = Backbone.Router.extend();
-
                 component = new Component({
-                    router: new Router()
+                    router: new Backbone.Router()
                 });
 
                 done();

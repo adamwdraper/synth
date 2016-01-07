@@ -47,7 +47,7 @@ define([
       describe('View', function() {
         var view;
 
-        beforeEach(function() {
+        beforeEach(function() {          
           var View = Backbone.View.extend({
             listeners: {
               'change:test model': 'test',
@@ -61,10 +61,9 @@ define([
             collection: new Backbone.Collection({
               test: 'test'
             }),
+            router: new Backbone.Router(),
             test: sinon.spy()
           });
-
-          Appular.router = new Backbone.Router();
 
           view = new View({
             data: 'data'
