@@ -28,8 +28,6 @@ define([
       var now = context.currentTime;
       var attack = this.settings.get('attack');
 
-      log('attack', attack);
-
       // attack
       this.node.gain.linearRampToValueAtTime(1.0, now + attack);
             
@@ -39,8 +37,6 @@ define([
       var now = context.currentTime;
       var decay = this.settings.get('decay');
 
-      log('decay', decay, 'to', this.settings.get('sustain'));
-
       // decay to sustain
       this.node.gain.linearRampToValueAtTime(this.settings.get('sustain'), now + decay);
     },
@@ -49,8 +45,6 @@ define([
       var release = this.settings.get('release');
 
       clearTimeout(this.decayTimeout);
-
-      log('release', release);
 
       this.node.gain.cancelScheduledValues(now);
 

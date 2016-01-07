@@ -26,17 +26,17 @@ define([
       // Analyzer
       // this.renderModule('oscilliscope', Oscilliscope);
 
-      synth.renderModule('oscillator', Oscillator, [
+      synth.addModule('oscillator', Oscillator, [
         'ampEnvelope'
       ]);
 
       // Amp Envelope
-      synth.renderModule('ampEnvelope', AmpEnvelope, [
+      synth.addModule('ampEnvelope', AmpEnvelope, [
         'master'
       ]);
 
       // Master Volume
-      synth.renderModule('master', Volume, [
+      synth.addModule('master', Volume, [
         context.destination
       ]);
 

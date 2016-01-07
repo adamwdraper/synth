@@ -25,7 +25,7 @@ define([
       
       return this;
     },
-    renderModule: function(name, View, connections) {
+    addModule: function(name, View, connections) {
       var view;
 
       connections = connections || [];
@@ -111,8 +111,6 @@ define([
       // make connections
       for(i = 0; i < connections.length; i++) {
         connection = _.isString(connections[i]) ? voice[connections[i]].node : connections[i];
-
-        log('connecting', module.id, node.node, connection);
 
         node.addConnection(connection);
       }
