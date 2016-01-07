@@ -7,6 +7,7 @@ var jshint = require('gulp-jshint');
 var jshintConfig = packageJSON.jshintConfig;
 var sourceMaps = require('gulp-sourcemaps');
 var autoPrefixer = require('gulp-autoprefixer');
+var karma = require('karma');
 
 var requirejsConfig = {
   baseUrl: './public/javascripts',
@@ -98,10 +99,24 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('require:build', function(cb){
+gulp.task('require:build', function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
-    cb();
-  }, cb);
+    done();
+  }, done);
+});
+
+// Run karma tests
+gulp.task('test', function (done) {
+  new karma.Server({
+    configFile: __dirname + '/public/javascripts/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
+gulp.task('test:tdd', function (done) {
+  new karma.Server({
+    configFile: __dirname + '/public/javascripts/karma.conf.js'
+  }, done).start();
 });
 
 // Task groups

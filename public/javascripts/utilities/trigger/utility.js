@@ -1,6 +1,3 @@
-/**
- * @appular trigger
- */
 define([
   'jquery',
   'underscore',
