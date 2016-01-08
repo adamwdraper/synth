@@ -2,20 +2,23 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   'utilities/trigger/utility',
+  'plugins/volume/plugin',
   './modules',
   './voices',
   'template!./template.html'  
-], function($, _, Backbone, trigger, Modules, Voices, template) {
+], function($, _, Backbone, context, trigger, Volume, Modules, Voices, template) {
   var View = Backbone.View.extend({
     modules: new Modules(),
     voices: new Voices(),
+    master: null,
     template: template,
     bindings: {},
     listeners: {},
     events: {},
     initialize: function() {
-      _.bindAll(this, 'addModule');
+      _.bindAll(this, 'addModule', 'addConnections');
     },
     render: function() {
       this.$el.html(this.template());
@@ -27,10 +30,31 @@ define([
       
       return this;
     },
+    start: function() {
+      this.createMaster();
+    },
+    setInstrament: function(instrament) {
+      trigger.connectInstrament(instrament);
+    },
     setModules: function(modules) {
+      // add all voice modules
       _.each(modules, this.addModule);
     },
-    addModule: function(module) {
+    createMaster: function() {
+      var master;
+
+      // add master Volume
+      master = new Volume().render();
+
+      this.$modules.append(master.$el);
+
+      this.master = new master.node();
+
+      this.master.create();
+
+      this.master.addConnection(context.destination);
+    },
+    addModule: function(module, options) {
       var view;
 
       module.connections = module.connections || [];
@@ -112,10 +136,12 @@ define([
       var i;
 
       // make connections
-      for(i = 0; i < connections.length; i++) {
-        connection = _.isString(connections[i]) ? voice[connections[i]].node : connections[i];
-
-        node.addConnection(connection);
+      if (connections.length) {
+        for(i = 0; i < connections.length; i++) {
+          node.addConnection(voice[connections[i]].node);
+        }
+      } else {
+        node.addConnection(this.master.node);
       }
     }
   });
