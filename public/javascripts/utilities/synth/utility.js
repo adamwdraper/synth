@@ -14,7 +14,9 @@ define([
     bindings: {},
     listeners: {},
     events: {},
-    initialize: function() {},
+    initialize: function() {
+      _.bindAll(this, 'addModule');
+    },
     render: function() {
       this.$el.html(this.template());
 
@@ -25,23 +27,24 @@ define([
       
       return this;
     },
-    addModule: function(name, View, connections) {
+    setModules: function(modules) {
+      _.each(modules, this.addModule);
+    },
+    addModule: function(module) {
       var view;
 
-      connections = connections || [];
+      module.connections = module.connections || [];
 
-      view = new View({
-        connections: connections
+      view = new module.view({
+        connections: module.connections
       }).render();
 
       this.$modules.append(view.render().$el);
 
-      this.modules.add({
-        id: name,
+      this.modules.add(_.extend(module, {
         view: view,
-        node: view.node,
-        connections: connections
-      });
+        node: view.node
+      }));
 
       return view;
     },

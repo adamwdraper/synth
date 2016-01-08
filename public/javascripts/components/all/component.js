@@ -26,18 +26,28 @@ define([
       // Analyzer
       // this.renderModule('oscilliscope', Oscilliscope);
 
-      synth.addModule('oscillator', Oscillator, [
-        'ampEnvelope'
-      ]);
-
-      // Amp Envelope
-      synth.addModule('ampEnvelope', AmpEnvelope, [
-        'master'
-      ]);
-
-      // Master Volume
-      synth.addModule('master', Volume, [
-        context.destination
+      synth.setModules([
+        {
+          id: 'oscillator',
+          view: Oscillator, 
+          connections: [
+            'ampEnvelope'
+          ]
+        },
+        {
+          id: 'ampEnvelope',
+          view: AmpEnvelope, 
+          connections: [
+            'master'
+          ]
+        },
+        {
+          id: 'master',
+          view: Volume, 
+          connections: [
+            context.destination
+          ]
+        }
       ]);
 
       trigger.connectInstrament(keyboard);
