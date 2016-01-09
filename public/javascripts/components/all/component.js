@@ -21,26 +21,23 @@ define([
 
       this.$el.find('[data-synth]').append(synth.$el);
 
-      // Analyzer
-      // this.renderModule('oscilliscope', Oscilliscope);
-
-      synth.setModules([
-        {
-          id: 'oscillator',
-          view: Oscillator, 
-          connections: [
-            'ampEnvelope'
-          ]
-        },
-        {
-          id: 'ampEnvelope',
-          view: AmpEnvelope
-        }
-      ]);
-
-      synth.setInstrament(keyboard);
-
-      synth.start();
+      synth.start({
+        analyser: Oscilliscope,
+        modules: [
+          {
+            id: 'oscillator',
+            view: Oscillator, 
+            connections: [
+              'ampEnvelope'
+            ]
+          },
+          {
+            id: 'ampEnvelope',
+            view: AmpEnvelope
+          }
+        ],
+        instrament: keyboard
+      });
 
       return this;
     }

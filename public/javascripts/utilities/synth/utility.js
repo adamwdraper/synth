@@ -13,6 +13,7 @@ define([
     modules: new Modules(),
     voices: new Voices(),
     master: null,
+    analyser: null,
     template: template,
     bindings: {},
     listeners: {},
@@ -30,7 +31,15 @@ define([
       
       return this;
     },
-    start: function() {
+    start: function(options) {
+      this.setModules(options.modules);
+
+      this.setInstrament(options.instrament);
+      
+      if (options.analyser) {
+        this.setAnalyser(options.analyser);
+      }
+
       this.createMaster();
     },
     setInstrament: function(instrament) {
@@ -39,6 +48,16 @@ define([
     setModules: function(modules) {
       // add all voice modules
       _.each(modules, this.addModule);
+    },
+    setAnalyser: function(Analyser) {
+      var analyser;
+
+      // add master Volume
+      analyser = new Analyser().render();
+
+      this.$modules.prepend(analyser.$el);
+
+      this.analyser = analyser.node;
     },
     createMaster: function() {
       var master;
@@ -53,6 +72,10 @@ define([
       this.master.create();
 
       this.master.addConnection(context.destination);
+
+      if (this.analyser) {
+        this.master.addConnection(this.analyser);
+      }
     },
     addModule: function(module, options) {
       var view;
