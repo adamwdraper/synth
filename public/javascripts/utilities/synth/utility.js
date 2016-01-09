@@ -2,19 +2,25 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'utilities/context/utility',
   'utilities/trigger/utility',
+  'plugins/volume/plugin',
   './modules',
   './voices',
   'template!./template.html'  
-], function($, _, Backbone, trigger, Modules, Voices, template) {
+], function($, _, Backbone, context, trigger, Volume, Modules, Voices, template) {
   var View = Backbone.View.extend({
     modules: new Modules(),
     voices: new Voices(),
+    master: null,
+    analyser: null,
     template: template,
     bindings: {},
     listeners: {},
     events: {},
-    initialize: function() {},
+    initialize: function() {
+      _.bindAll(this, 'addModule', 'addConnections');
+    },
     render: function() {
       this.$el.html(this.template());
 
@@ -25,23 +31,67 @@ define([
       
       return this;
     },
-    addModule: function(name, View, connections) {
+    start: function(options) {
+      this.setModules(options.modules);
+
+      this.setInstrament(options.instrament);
+      
+      if (options.analyser) {
+        this.setAnalyser(options.analyser);
+      }
+
+      this.createMaster();
+    },
+    setInstrament: function(instrament) {
+      trigger.connectInstrament(instrament);
+    },
+    setModules: function(modules) {
+      // add all voice modules
+      _.each(modules, this.addModule);
+    },
+    setAnalyser: function(Analyser) {
+      var analyser;
+
+      // add master Volume
+      analyser = new Analyser().render();
+
+      this.$modules.prepend(analyser.$el);
+
+      this.analyser = analyser.node;
+    },
+    createMaster: function() {
+      var master;
+
+      // add master Volume
+      master = new Volume().render();
+
+      this.$modules.append(master.$el);
+
+      this.master = new master.node();
+
+      this.master.create();
+
+      this.master.addConnection(context.destination);
+
+      if (this.analyser) {
+        this.master.addConnection(this.analyser);
+      }
+    },
+    addModule: function(module, options) {
       var view;
 
-      connections = connections || [];
+      module.connections = module.connections || [];
 
-      view = new View({
-        connections: connections
+      view = new module.view({
+        connections: module.connections
       }).render();
 
       this.$modules.append(view.render().$el);
 
-      this.modules.add({
-        id: name,
+      this.modules.add(_.extend(module, {
         view: view,
-        node: view.node,
-        connections: connections
-      });
+        node: view.node
+      }));
 
       return view;
     },
@@ -109,10 +159,12 @@ define([
       var i;
 
       // make connections
-      for(i = 0; i < connections.length; i++) {
-        connection = _.isString(connections[i]) ? voice[connections[i]].node : connections[i];
-
-        node.addConnection(connection);
+      if (connections.length) {
+        for(i = 0; i < connections.length; i++) {
+          node.addConnection(voice[connections[i]].node);
+        }
+      } else {
+        node.addConnection(this.master.node);
       }
     }
   });

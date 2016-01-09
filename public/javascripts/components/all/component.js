@@ -4,14 +4,12 @@ define([
   'backbone',
   'utilities/context/utility',
   'utilities/keyboard/utility',
-  'utilities/trigger/utility',
   'utilities/synth/utility',
   'plugins/amp-envelope/plugin',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
-  'plugins/volume/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, keyboard, trigger, synth, AmpEnvelope, Oscilliscope, Oscillator, Volume, template) {
+], function($, _, Backbone, context, keyboard, synth, AmpEnvelope, Oscilliscope, Oscillator, template) {
   var View = Backbone.View.extend({
     template: template,
     bindings: {},
@@ -23,24 +21,23 @@ define([
 
       this.$el.find('[data-synth]').append(synth.$el);
 
-      // Analyzer
-      // this.renderModule('oscilliscope', Oscilliscope);
-
-      synth.addModule('oscillator', Oscillator, [
-        'ampEnvelope'
-      ]);
-
-      // Amp Envelope
-      synth.addModule('ampEnvelope', AmpEnvelope, [
-        'master'
-      ]);
-
-      // Master Volume
-      synth.addModule('master', Volume, [
-        context.destination
-      ]);
-
-      trigger.connectInstrament(keyboard);
+      synth.start({
+        analyser: Oscilliscope,
+        modules: [
+          {
+            id: 'oscillator',
+            view: Oscillator, 
+            connections: [
+              'ampEnvelope'
+            ]
+          },
+          {
+            id: 'ampEnvelope',
+            view: AmpEnvelope
+          }
+        ],
+        instrament: keyboard
+      });
 
       return this;
     }
