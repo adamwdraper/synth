@@ -114,6 +114,13 @@ gulp.task('test', function (done) {
   }, done).start();
 });
 
+gulp.task('test:travis', function (done) {
+  new karma.Server({
+    configFile: __dirname + '/public/javascripts/karma-travis.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
 gulp.task('test:tdd', function (done) {
   new karma.Server({
     configFile: __dirname + '/public/javascripts/karma.conf.js'
@@ -159,6 +166,6 @@ gulp.task('default', [
 ]);
 
 gulp.task('travis', [
-  'test',
+  'test:travis',
   'build'
 ]);
