@@ -137,6 +137,15 @@ gulp.task('develop', function () {
   });
 });
 
+gulp.task('production', function () {
+  nodemon({
+    script: './bin/www',
+    env: {
+      'NODE_ENV': 'production'
+    }
+  });
+});
+
 // Task groups
 gulp.task('build', [
   'lint',
