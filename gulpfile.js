@@ -8,6 +8,7 @@ var jshintConfig = packageJSON.jshintConfig;
 var sourceMaps = require('gulp-sourcemaps');
 var autoPrefixer = require('gulp-autoprefixer');
 var karma = require('karma');
+var nodemon = require('gulp-nodemon');
 
 var requirejsConfig = {
   baseUrl: './public/javascripts',
@@ -119,6 +120,32 @@ gulp.task('test:tdd', function (done) {
   }, done).start();
 });
 
+// Start Server
+gulp.task('develop', function () {
+  nodemon({
+    script: './bin/www',
+    watch: [
+      '/app.js',
+      '/config.js',
+      '/routes/**/*',
+      '/views/**/*'
+    ],
+    ext: 'js jade',
+    env: {
+      'NODE_ENV': 'development'
+    }
+  });
+});
+
+gulp.task('production', function () {
+  nodemon({
+    script: './bin/www',
+    env: {
+      'NODE_ENV': 'production'
+    }
+  });
+});
+
 // Task groups
 gulp.task('build', [
   'lint',
@@ -127,5 +154,6 @@ gulp.task('build', [
 ]);
 
 gulp.task('default', [
+  'develop',
   'sass:watch'
 ]);
