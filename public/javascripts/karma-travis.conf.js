@@ -20,8 +20,7 @@ module.exports = function(config) {
       'mocha'
     ],
     browsers: [
-      'Chrome',
-      'Firefox'
+      'PhantomJS'
     ]
   });
 };
