@@ -121,10 +121,16 @@ gulp.task('test:tdd', function (done) {
 });
 
 // Start Server
-gulp.task('develop', function (cb) {
+gulp.task('develop', function () {
   nodemon({
     script: './bin/www',
-    ext: 'js html',
+    watch: [
+      '/app.js',
+      '/config.js',
+      '/routes/**/*',
+      '/views/**/*'
+    ],
+    ext: 'js jade',
     env: {
       'NODE_ENV': 'development'
     }
