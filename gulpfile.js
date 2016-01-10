@@ -157,3 +157,8 @@ gulp.task('default', [
   'develop',
   'sass:watch'
 ]);
+
+gulp.task('travis', [
+  'test',
+  'build'
+]);
