@@ -7,7 +7,7 @@ module.exports = function() {
         env: 'production',
         isProduction: true,
         requirejs: {
-          src: '/javascripts//build/libraries/require/require.js',
+          src: '/javascripts/build/libraries/require/require.js',
           main: '/javascripts/build/libraries/require/configs/build'
         }
       };
