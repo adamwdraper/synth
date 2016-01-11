@@ -14,7 +14,7 @@ var del = require('del');
 
 var requirejsConfig = {
   baseUrl: './src/javascripts',
-  dir: './src/javascripts/build',
+  dir: './dist/javascripts',
   paths: {
     'appular': 'libraries/appular/appular',
     'backbone': 'libraries/backbone/backbone',
@@ -111,7 +111,7 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('require:build', function(done) {
+gulp.task('rjs', function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
     done();
   }, done);
@@ -181,7 +181,7 @@ gulp.task('version', function () {
 gulp.task('build', [
   'clean',
   'lint',
-  'require:build',
+  'rjs',
   'sass'
 ]);
 
