@@ -17,6 +17,8 @@ define([
     },
     create: function() {
       this.node = context.createGain();
+
+      this.updateVolume();
     },
     addConnection: function(node) {
       this.node.connect(node);
