@@ -13,8 +13,8 @@ var rev = require('gulp-rev');
 var del = require('del');
 
 var requirejsConfig = {
-  baseUrl: './public/javascripts',
-  dir: './public/javascripts/build',
+  baseUrl: './src/javascripts',
+  dir: './src/javascripts/build',
   paths: {
     'appular': 'libraries/appular/appular',
     'backbone': 'libraries/backbone/backbone',
@@ -71,7 +71,7 @@ jshintConfig.lookup = false;
 
 
 // Empty directories
-gulp.task('del:dist', function(cb) {
+gulp.task('clean', function(cb) {
   del([
     './dist/**/*'
   ], cb);
@@ -79,7 +79,7 @@ gulp.task('del:dist', function(cb) {
 
 // Compile sass
 gulp.task('sass', function() {
-  gulp.src('./public/sass/*.scss')
+  gulp.src('./src/sass/*.scss')
     .pipe(sourceMaps.init())
     .pipe(sass({
         outputStyle: 'compressed'
@@ -87,12 +87,12 @@ gulp.task('sass', function() {
       .on('error', sass.logError))
     .pipe(autoPrefixer())
     .pipe(sourceMaps.write('.'))
-    .pipe(gulp.dest('./public/stylesheets'));
+    .pipe(gulp.dest('./dist/stylesheets'));
 });
 
 // Watch for compiling sass
 gulp.task('sass:watch', function() {
-  gulp.watch('./public/sass/**/*.scss', [
+  gulp.watch('./src/sass/**/*.scss', [
     'sass'
   ]);
 });
@@ -100,10 +100,10 @@ gulp.task('sass:watch', function() {
 // Lint javascript
 gulp.task('lint', function() {
   return gulp.src([
-      './public/javascripts/routers/**/*.js',
-      './public/javascripts/components/**/*.js',
-      './public/javascripts/plugins/**/*.js',
-      './public/javascripts/utilities/**/*.js'
+      './src/javascripts/routers/**/*.js',
+      './src/javascripts/components/**/*.js',
+      './src/javascripts/plugins/**/*.js',
+      './src/javascripts/utilities/**/*.js'
     ])
     .pipe(jshint(jshintConfig))
     .pipe(jshint.reporter('default'))
@@ -120,21 +120,21 @@ gulp.task('require:build', function(done) {
 // Run karma tests
 gulp.task('test', function (done) {
   new karma.Server({
-    configFile: __dirname + '/public/javascripts/karma.conf.js',
+    configFile: __dirname + '/src/javascripts/karma.conf.js',
     singleRun: true
   }, done).start();
 });
 
 gulp.task('test:travis', function (done) {
   new karma.Server({
-    configFile: __dirname + '/public/javascripts/karma-travis.conf.js',
+    configFile: __dirname + '/src/javascripts/karma-travis.conf.js',
     singleRun: true
   }, done).start();
 });
 
 gulp.task('test:tdd', function (done) {
   new karma.Server({
-    configFile: __dirname + '/public/javascripts/karma.conf.js'
+    configFile: __dirname + '/src/javascripts/karma.conf.js'
   }, done).start();
 });
 
@@ -167,7 +167,7 @@ gulp.task('production', function () {
 // Version assets
 gulp.task('version', function () {
   return gulp.src([
-      './public/stylesheets/*.css'
+      './src/stylesheets/*.css'
     ], {
       base: './'
     })
@@ -179,6 +179,7 @@ gulp.task('version', function () {
 
 // Task groups
 gulp.task('build', [
+  'clean',
   'lint',
   'require:build',
   'sass'
