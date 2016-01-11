@@ -87,8 +87,10 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('./src/stylesheets'));
 });
 
-gulp.task('sass:dist', ['clean'], function() {
-  gulp.src('./src/sass/*.scss')
+gulp.task('sass:dist', [
+    'clean'
+  ], function() {
+  return gulp.src('./src/sass/*.scss')
     .pipe(sass({
         outputStyle: 'compressed'
       })
@@ -118,7 +120,9 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('javascript:dist', ['clean'], function(done) {
+gulp.task('javascript:dist', [
+    'clean'
+  ], function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
     done();
   }, done);
@@ -172,23 +176,29 @@ gulp.task('production', function () {
 });
 
 // Version assets
-gulp.task('version', function () {
+gulp.task('version', 
+  // [
+  //   'javascript:dist',
+  //   'sass:dist'
+  // ], 
+  function () {
   return gulp.src([
       './dist/stylesheets/*.css'
     ], {
-      base: './'
+      base: './dist'
     })
     .pipe(rev())
-    .pipe(gulp.dest('./'))
+    .pipe(gulp.dest('./dist'))
     .pipe(rev.manifest())
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./config'));
 });
 
 // Task groups
 gulp.task('build', [
   'lint',
   'javascript:dist',
-  'sass:dist'
+  'sass:dist',
+  'version'
 ]);
 
 gulp.task('default', [

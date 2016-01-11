@@ -2,7 +2,7 @@ var express = require('express');
 var path = require('path');
 
 var routes = require('./routes/index');
-var Config = require('./config');
+var Config = require('./config/config');
     
 var app = express();
 
