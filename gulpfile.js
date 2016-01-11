@@ -81,12 +81,20 @@ gulp.task('clean', function(cb) {
 gulp.task('sass', function() {
   gulp.src('./src/sass/*.scss')
     .pipe(sourceMaps.init())
+    .pipe(sass()
+      .on('error', sass.logError))
+    .pipe(autoPrefixer())
+    .pipe(sourceMaps.write('.'))
+    .pipe(gulp.dest('./src/stylesheets'));
+});
+
+gulp.task('sass:dist', function() {
+  gulp.src('./src/sass/*.scss')
     .pipe(sass({
         outputStyle: 'compressed'
       })
       .on('error', sass.logError))
     .pipe(autoPrefixer())
-    .pipe(sourceMaps.write('.'))
     .pipe(gulp.dest('./dist/stylesheets'));
 });
 
@@ -111,7 +119,7 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('rjs', function(done) {
+gulp.task('javascript:dist', function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
     done();
   }, done);
@@ -167,7 +175,7 @@ gulp.task('production', function () {
 // Version assets
 gulp.task('version', function () {
   return gulp.src([
-      './src/stylesheets/*.css'
+      './dist/stylesheets/*.css'
     ], {
       base: './'
     })
@@ -181,8 +189,9 @@ gulp.task('version', function () {
 gulp.task('build', [
   'clean',
   'lint',
-  'rjs',
-  'sass'
+  'javascript:dist',
+  'sass:dist',
+  'version'
 ]);
 
 gulp.task('default', [

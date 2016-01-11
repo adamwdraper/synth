@@ -6,7 +6,7 @@ module.exports = function() {
       config = {
         env: 'production',
         isProduction: true,
-        assets: 'dist',
+        static: 'dist',
         requirejs: {
           src: '/javascripts/build/libraries/require/require.js',
           main: '/javascripts/build/libraries/require/configs/build'
@@ -18,7 +18,7 @@ module.exports = function() {
       config = {
         env: 'development',
         isProduction: false,
-        assets: 'src',
+        static: 'src',
         requirejs: {
           src: '/javascripts/libraries/require/require.js',
           main: '/javascripts/libraries/require/configs/dev'
