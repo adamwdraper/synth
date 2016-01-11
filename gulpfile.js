@@ -69,14 +69,11 @@ var requirejsConfig = {
 jshintConfig.lookup = false;
 
 
-
 // Empty directories
-gulp.task('clean', function(done) {
-  del.sync([
+gulp.task('clean', function() {
+  return del([
     './dist/*'
   ]);
-
-  done();
 });
 
 // Compile sass
