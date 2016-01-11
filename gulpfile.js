@@ -9,10 +9,12 @@ var sourceMaps = require('gulp-sourcemaps');
 var autoPrefixer = require('gulp-autoprefixer');
 var karma = require('karma');
 var nodemon = require('gulp-nodemon');
+var rev = require('gulp-rev');
+var del = require('del');
 
 var requirejsConfig = {
-  baseUrl: './public/javascripts',
-  dir: './public/javascripts/build',
+  baseUrl: './src/javascripts',
+  dir: './dist/javascripts',
   paths: {
     'appular': 'libraries/appular/appular',
     'backbone': 'libraries/backbone/backbone',
@@ -66,22 +68,41 @@ var requirejsConfig = {
 
 jshintConfig.lookup = false;
 
+
+
+// Empty directories
+gulp.task('clean', function(done) {
+  del.sync([
+    './dist/*'
+  ]);
+
+  done();
+});
+
 // Compile sass
 gulp.task('sass', function() {
-  gulp.src('./public/sass/*.scss')
+  gulp.src('./src/sass/*.scss')
     .pipe(sourceMaps.init())
+    .pipe(sass()
+      .on('error', sass.logError))
+    .pipe(autoPrefixer())
+    .pipe(sourceMaps.write('.'))
+    .pipe(gulp.dest('./src/stylesheets'));
+});
+
+gulp.task('sass:dist', ['clean'], function() {
+  gulp.src('./src/sass/*.scss')
     .pipe(sass({
         outputStyle: 'compressed'
       })
       .on('error', sass.logError))
     .pipe(autoPrefixer())
-    .pipe(sourceMaps.write('.'))
-    .pipe(gulp.dest('./public/stylesheets'));
+    .pipe(gulp.dest('./dist/stylesheets'));
 });
 
 // Watch for compiling sass
 gulp.task('sass:watch', function() {
-  gulp.watch('./public/sass/**/*.scss', [
+  gulp.watch('./src/sass/**/*.scss', [
     'sass'
   ]);
 });
@@ -89,10 +110,10 @@ gulp.task('sass:watch', function() {
 // Lint javascript
 gulp.task('lint', function() {
   return gulp.src([
-      './public/javascripts/routers/**/*.js',
-      './public/javascripts/components/**/*.js',
-      './public/javascripts/plugins/**/*.js',
-      './public/javascripts/utilities/**/*.js'
+      './src/javascripts/routers/**/*.js',
+      './src/javascripts/components/**/*.js',
+      './src/javascripts/plugins/**/*.js',
+      './src/javascripts/utilities/**/*.js'
     ])
     .pipe(jshint(jshintConfig))
     .pipe(jshint.reporter('default'))
@@ -100,7 +121,7 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('require:build', function(done) {
+gulp.task('javascript:dist', ['clean'], function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
     done();
   }, done);
@@ -109,21 +130,21 @@ gulp.task('require:build', function(done) {
 // Run karma tests
 gulp.task('test', function (done) {
   new karma.Server({
-    configFile: __dirname + '/public/javascripts/karma.conf.js',
+    configFile: __dirname + '/src/javascripts/karma.conf.js',
     singleRun: true
   }, done).start();
 });
 
 gulp.task('test:travis', function (done) {
   new karma.Server({
-    configFile: __dirname + '/public/javascripts/karma-travis.conf.js',
+    configFile: __dirname + '/src/javascripts/karma-travis.conf.js',
     singleRun: true
   }, done).start();
 });
 
 gulp.task('test:tdd', function (done) {
   new karma.Server({
-    configFile: __dirname + '/public/javascripts/karma.conf.js'
+    configFile: __dirname + '/src/javascripts/karma.conf.js'
   }, done).start();
 });
 
@@ -153,11 +174,24 @@ gulp.task('production', function () {
   });
 });
 
+// Version assets
+gulp.task('version', function () {
+  return gulp.src([
+      './dist/stylesheets/*.css'
+    ], {
+      base: './'
+    })
+    .pipe(rev())
+    .pipe(gulp.dest('./'))
+    .pipe(rev.manifest())
+    .pipe(gulp.dest('./'));
+});
+
 // Task groups
 gulp.task('build', [
   'lint',
-  'require:build',
-  'sass'
+  'javascript:dist',
+  'sass:dist'
 ]);
 
 gulp.task('default', [

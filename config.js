@@ -6,9 +6,9 @@ module.exports = function() {
       config = {
         env: 'production',
         isProduction: true,
+        static: 'dist',
         requirejs: {
-          src: '/javascripts//build/libraries/require/require.js',
-          main: '/javascripts/build/libraries/require/configs/build'
+          main: '/javascripts/libraries/require/configs/build'
         }
       };
       break;
@@ -17,8 +17,8 @@ module.exports = function() {
       config = {
         env: 'development',
         isProduction: false,
+        static: 'src',
         requirejs: {
-          src: '/javascripts/libraries/require/require.js',
           main: '/javascripts/libraries/require/configs/dev'
         }
       };
