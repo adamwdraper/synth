@@ -71,10 +71,12 @@ jshintConfig.lookup = false;
 
 
 // Empty directories
-gulp.task('clean', function(cb) {
-  del([
-    './dist/**/*'
-  ], cb);
+gulp.task('clean', function(done) {
+  del.sync([
+    './dist/*'
+  ]);
+
+  done();
 });
 
 // Compile sass
@@ -88,7 +90,7 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('./src/stylesheets'));
 });
 
-gulp.task('sass:dist', function() {
+gulp.task('sass:dist', ['clean'], function() {
   gulp.src('./src/sass/*.scss')
     .pipe(sass({
         outputStyle: 'compressed'
@@ -119,7 +121,7 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('javascript:dist', function(done) {
+gulp.task('javascript:dist', ['clean'], function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
     done();
   }, done);
@@ -187,11 +189,9 @@ gulp.task('version', function () {
 
 // Task groups
 gulp.task('build', [
-  'clean',
   'lint',
   'javascript:dist',
-  'sass:dist',
-  'version'
+  'sass:dist'
 ]);
 
 gulp.task('default', [
