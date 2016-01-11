@@ -9,6 +9,8 @@ var sourceMaps = require('gulp-sourcemaps');
 var autoPrefixer = require('gulp-autoprefixer');
 var karma = require('karma');
 var nodemon = require('gulp-nodemon');
+var rev = require('gulp-rev');
+var del = require('del');
 
 var requirejsConfig = {
   baseUrl: './public/javascripts',
@@ -65,6 +67,15 @@ var requirejsConfig = {
 };
 
 jshintConfig.lookup = false;
+
+
+
+// Empty directories
+gulp.task('del:dist', function(cb) {
+  del([
+    './dist/**/*'
+  ], cb);
+});
 
 // Compile sass
 gulp.task('sass', function() {
@@ -151,6 +162,19 @@ gulp.task('production', function () {
       'NODE_ENV': 'production'
     }
   });
+});
+
+// Version assets
+gulp.task('version', function () {
+  return gulp.src([
+      './public/stylesheets/*.css'
+    ], {
+      base: './'
+    })
+    .pipe(rev())
+    .pipe(gulp.dest('./'))
+    .pipe(rev.manifest())
+    .pipe(gulp.dest('./'));
 });
 
 // Task groups
