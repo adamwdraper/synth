@@ -78,7 +78,7 @@ gulp.task('clean', function() {
 
 // Compile sass
 gulp.task('sass', function() {
-  gulp.src('./src/sass/*.scss')
+  return gulp.src('./src/sass/*.scss')
     .pipe(sourceMaps.init())
     .pipe(sass()
       .on('error', sass.logError))
@@ -100,7 +100,9 @@ gulp.task('sass:dist', [
 });
 
 // Watch for compiling sass
-gulp.task('sass:watch', function() {
+gulp.task('sass:watch', [
+  'sass'
+  ], function() {
   gulp.watch('./src/sass/**/*.scss', [
     'sass'
   ]);
@@ -155,7 +157,7 @@ gulp.task('develop', function () {
     script: './bin/www',
     watch: [
       '/app.js',
-      '/config.js',
+      '/config/**/*',
       '/routes/**/*',
       '/views/**/*'
     ],
@@ -176,12 +178,10 @@ gulp.task('production', function () {
 });
 
 // Version assets
-gulp.task('version', 
-  // [
-  //   'javascript:dist',
-  //   'sass:dist'
-  // ], 
-  function () {
+gulp.task('version', [
+    'javascript:dist',
+    'sass:dist'
+  ], function () {
   return gulp.src([
       './dist/stylesheets/*.css'
     ], {

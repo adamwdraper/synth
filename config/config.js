@@ -1,5 +1,3 @@
-var assets = require('rev-manifest.json');
-
 module.exports = function() {
   var config;
 
@@ -25,8 +23,6 @@ module.exports = function() {
         }
       };
   }
-
-  config.assets
 
   return config;
 };
