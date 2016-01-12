@@ -183,7 +183,8 @@ gulp.task('version', [
     'sass:dist'
   ], function () {
   return gulp.src([
-      './dist/stylesheets/*.css'
+      './dist/stylesheets/*.css',
+      './dist/javascripts/libraries/require/require.js'
     ], {
       base: './dist'
     })

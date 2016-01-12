@@ -11,4 +11,4 @@ html
 
     block content
 
-    script(src="/javascripts/libraries/require/require.js", data-main=config.requirejs.main)
+    script(src=assets.get('/javascripts/libraries/require/require.js'), data-main=assets.get(config.requirejs.main))
