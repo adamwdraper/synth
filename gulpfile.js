@@ -184,7 +184,9 @@ gulp.task('version', [
   ], function () {
   return gulp.src([
       './dist/stylesheets/*.css',
-      './dist/javascripts/libraries/require/require.js'
+      './dist/images/**/*',
+      './dist/javascripts/libraries/require/require.js',
+      './dist/javascripts/libraries/require/configs/build.js'
     ], {
       base: './dist'
     })
