@@ -131,14 +131,18 @@ gulp.task('javascript:dist', [
 });
 
 // Run karma tests
-gulp.task('test', function (done) {
+gulp.task('test', [
+    'lint'
+  ], function (done) {
   new karma.Server({
     configFile: __dirname + '/src/javascripts/karma.conf.js',
     singleRun: true
   }, done).start();
 });
 
-gulp.task('test:travis', function (done) {
+gulp.task('test:travis', [
+    'lint'
+  ], function (done) {
   new karma.Server({
     configFile: __dirname + '/src/javascripts/karma-travis.conf.js',
     singleRun: true
@@ -198,7 +202,6 @@ gulp.task('version', [
 
 // Task groups
 gulp.task('build', [
-  'lint',
   'javascript:dist',
   'sass:dist',
   'version'
