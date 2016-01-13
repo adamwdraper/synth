@@ -33,7 +33,8 @@
     "sinon": "^1.17.2"
   },
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "postinstall": "gulp build"
   },
   "repository": {
     "type": "git",
