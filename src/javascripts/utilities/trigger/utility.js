@@ -56,14 +56,14 @@ define([
       this.triggerStop(note);
     },
     triggerStart: function(note) {
-      this.trigger('note:on', note);
-
       log('trigger', 'on', note);
+
+      this.trigger('note:on', note);
     },
     triggerStop: function(note) {
-      this.trigger('note:off', note);
-      
       log('trigger', 'off', note);
+      
+      this.trigger('note:off', note);
     }
   });
 

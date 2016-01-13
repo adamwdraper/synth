@@ -69,19 +69,16 @@ var requirejsConfig = {
 jshintConfig.lookup = false;
 
 
-
 // Empty directories
-gulp.task('clean', function(done) {
-  del.sync([
+gulp.task('clean', function() {
+  return del([
     './dist/*'
   ]);
-
-  done();
 });
 
 // Compile sass
 gulp.task('sass', function() {
-  gulp.src('./src/sass/*.scss')
+  return gulp.src('./src/sass/*.scss')
     .pipe(sourceMaps.init())
     .pipe(sass()
       .on('error', sass.logError))
@@ -90,8 +87,10 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('./src/stylesheets'));
 });
 
-gulp.task('sass:dist', ['clean'], function() {
-  gulp.src('./src/sass/*.scss')
+gulp.task('sass:dist', [
+    'clean'
+  ], function() {
+  return gulp.src('./src/sass/*.scss')
     .pipe(sass({
         outputStyle: 'compressed'
       })
@@ -101,7 +100,9 @@ gulp.task('sass:dist', ['clean'], function() {
 });
 
 // Watch for compiling sass
-gulp.task('sass:watch', function() {
+gulp.task('sass:watch', [
+  'sass'
+  ], function() {
   gulp.watch('./src/sass/**/*.scss', [
     'sass'
   ]);
@@ -121,7 +122,9 @@ gulp.task('lint', function() {
 });
 
 // Build javascript with r.js
-gulp.task('javascript:dist', ['clean'], function(done) {
+gulp.task('javascript:dist', [
+    'clean'
+  ], function(done) {
   requirejs.optimize(requirejsConfig, function(buildResponse) {
     done();
   }, done);
@@ -154,7 +157,7 @@ gulp.task('develop', function () {
     script: './bin/www',
     watch: [
       '/app.js',
-      '/config.js',
+      '/config/**/*',
       '/routes/**/*',
       '/views/**/*'
     ],
@@ -175,23 +178,30 @@ gulp.task('production', function () {
 });
 
 // Version assets
-gulp.task('version', function () {
+gulp.task('version', [
+    'javascript:dist',
+    'sass:dist'
+  ], function () {
   return gulp.src([
-      './dist/stylesheets/*.css'
+      './dist/stylesheets/*.css',
+      './dist/images/**/*',
+      './dist/javascripts/libraries/require/require.js',
+      './dist/javascripts/libraries/require/configs/build.js'
     ], {
-      base: './'
+      base: './dist'
     })
     .pipe(rev())
-    .pipe(gulp.dest('./'))
+    .pipe(gulp.dest('./dist'))
     .pipe(rev.manifest())
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./config'));
 });
 
 // Task groups
 gulp.task('build', [
   'lint',
   'javascript:dist',
-  'sass:dist'
+  'sass:dist',
+  'version'
 ]);
 
 gulp.task('default', [

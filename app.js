@@ -2,11 +2,13 @@ var express = require('express');
 var path = require('path');
 
 var routes = require('./routes/index');
-var Config = require('./config');
+var Config = require('./config/config');
+var Assets = require('./config/assets');
     
 var app = express();
 
 app.locals.config = new Config();
+app.locals.assets = new Assets(app.locals.config);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

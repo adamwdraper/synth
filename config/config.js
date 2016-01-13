@@ -8,7 +8,7 @@ module.exports = function() {
         isProduction: true,
         static: 'dist',
         requirejs: {
-          main: '/javascripts/libraries/require/configs/build'
+          main: '/javascripts/libraries/require/configs/build.js'
         }
       };
       break;
@@ -19,7 +19,7 @@ module.exports = function() {
         isProduction: false,
         static: 'src',
         requirejs: {
-          main: '/javascripts/libraries/require/configs/dev'
+          main: '/javascripts/libraries/require/configs/dev.js'
         }
       };
   }

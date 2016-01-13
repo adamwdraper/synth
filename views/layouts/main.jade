@@ -5,10 +5,10 @@ html
     
   head
     title= title
-    link(rel="stylesheet", href="/stylesheets/website.css")
+    link(rel="stylesheet", href=assets.get('/stylesheets/website.css'))
 
   body(data-appular-router="#{router}")
 
     block content
 
-    script(src="/javascripts/libraries/require/require.js", data-main=config.requirejs.main)
+    script(src=assets.get('/javascripts/libraries/require/require.js'), data-main=assets.get(config.requirejs.main))
