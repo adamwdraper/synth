@@ -6,6 +6,7 @@
     "node": "4.2.4"
   },
   "dependencies": {
+    "chai": "^3.4.1",
     "compression": "^1.6.0",
     "debug": "~2.2.0",
     "del": "^2.2.0",
@@ -13,16 +14,12 @@
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-jshint": "^2.0.0",
+    "gulp-nodemon": "^2.0.6",
     "gulp-rev": "^6.0.1",
     "gulp-sass": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "jade": "~1.11.0",
     "jshint": "^2.8.0",
-    "requirejs": "^2.1.22"
-  },
-  "devDependencies": {
-    "chai": "^3.4.1",
-    "gulp-nodemon": "^2.0.6",
     "karma": "^0.13.18",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.2.2",
@@ -34,6 +31,7 @@
     "karma-sinon": "^1.0.4",
     "mocha": "^2.3.4",
     "phantomjs": "^1.9.19",
+    "requirejs": "^2.1.22",
     "sinon": "^1.17.2"
   },
   "scripts": {
