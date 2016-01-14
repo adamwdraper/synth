@@ -4,7 +4,7 @@ define([
   'backbone',
   'utilities/context/utility',
   'utilities/synth/utility',
-  'plugins/Keyboard/plugin',
+  'plugins/keyboard/plugin',
   'plugins/amp-envelope/plugin',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
