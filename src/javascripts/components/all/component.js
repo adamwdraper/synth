@@ -3,13 +3,13 @@ define([
   'underscore',
   'backbone',
   'utilities/context/utility',
-  'utilities/keyboard/utility',
   'utilities/synth/utility',
+  'plugins/Keyboard/plugin',
   'plugins/amp-envelope/plugin',
   'plugins/oscilliscope/plugin',
   'plugins/oscillator/plugin',
   'template!./template.html'
-], function($, _, Backbone, context, keyboard, synth, AmpEnvelope, Oscilliscope, Oscillator, template) {
+], function($, _, Backbone, context, synth, Keyboard, AmpEnvelope, Oscilliscope, Oscillator, template) {
   var View = Backbone.View.extend({
     template: template,
     bindings: {},
@@ -36,7 +36,7 @@ define([
             view: AmpEnvelope
           }
         ],
-        instrament: keyboard
+        instrament: Keyboard
       });
 
       return this;

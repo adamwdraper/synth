@@ -12,6 +12,7 @@ define([
   var View = Backbone.View.extend({
     modules: new Modules(),
     voices: new Voices(),
+    instrament: null,
     master: null,
     analyser: null,
     template: template,
@@ -42,8 +43,10 @@ define([
 
       this.createMaster();
     },
-    setInstrament: function(instrament) {
-      trigger.connectInstrament(instrament);
+    setInstrament: function(Instrament) {
+      this.instrament = new Instrament();
+
+      trigger.connectInstrament(this.instrament);
     },
     setModules: function(modules) {
       // add all voice modules
