@@ -12,6 +12,7 @@ define([
   var View = Backbone.View.extend({
     modules: new Modules(),
     voices: new Voices(),
+    instrament: null,
     master: null,
     analyser: null,
     template: template,
@@ -24,6 +25,8 @@ define([
     render: function() {
       this.$el.html(this.template());
 
+      this.$analyser = this.$el.find('[data-analyser]');
+      this.$instrament = this.$el.find('[data-instrament]');
       this.$modules = this.$el.find('[data-modules]');
 
       this.listenTo(trigger, 'note:on', this.createVoice);
@@ -32,18 +35,22 @@ define([
       return this;
     },
     start: function(options) {
-      this.setModules(options.modules);
-
-      this.setInstrament(options.instrament);
-      
       if (options.analyser) {
         this.setAnalyser(options.analyser);
       }
+      
+      this.setInstrament(options.instrament);
+      
+      this.setModules(options.modules);
 
       this.createMaster();
     },
-    setInstrament: function(instrament) {
-      trigger.connectInstrament(instrament);
+    setInstrament: function(Instrament) {
+      this.instrament = new Instrament().render();
+
+      this.$instrament.append(this.instrament.$el);
+
+      trigger.connectInstrament(this.instrament);
     },
     setModules: function(modules) {
       // add all voice modules
@@ -55,7 +62,7 @@ define([
       // add master Volume
       analyser = new Analyser().render();
 
-      this.$modules.prepend(analyser.$el);
+      this.$analyser.append(analyser.$el);
 
       this.analyser = analyser.node;
     },

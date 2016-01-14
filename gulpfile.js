@@ -48,7 +48,6 @@ var requirejsConfig = {
       name: 'libraries/require/configs/build',
       include: [
         'utilities/context/utility',
-        'utilities/keyboard/utility',
         'utilities/midi/utility',
         'utilities/trigger/utility',
         'plugins/amp-envelope/plugin',
@@ -56,8 +55,9 @@ var requirejsConfig = {
         'plugins/oscilliscope/plugin',
         'plugins/voices/plugin',
         'plugins/volume/plugin',
-        'components/all/component',
-        'routers/default/router'
+        'plugins/keyboard/plugin',
+        'routers/default/router',
+        'components/keyboard/component'
       ],
       exclude: [
         'libraries/require/require'
