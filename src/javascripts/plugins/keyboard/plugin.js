@@ -3,9 +3,12 @@ define([
   'underscore',
   'backbone',
   'utilities/midi/utility',
-  './settings'
-], function($, _, Backbone, midi, Settings) {
+  './settings',
+  'template!./template.html'
+], function($, _, Backbone, midi, Settings, template) {
   var View = Backbone.View.extend({
+    className: 'ui-module',
+    template: template,
     map: {
       '65': 1,
       '68': 5,
@@ -31,6 +34,11 @@ define([
 
       this.$document.on('keydown', this.startNote);
       this.$document.on('keyup', this.stopNote);
+    },
+    render: function() {
+      this.$el.html(this.template());
+
+      return this;
     },
     startNote: function(event) {
       var note;

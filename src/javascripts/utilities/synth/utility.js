@@ -25,7 +25,9 @@ define([
     render: function() {
       this.$el.html(this.template());
 
-      this.$interfaces = this.$el.find('[data-interfaces]');
+      this.$analyser = this.$el.find('[data-analyser]');
+      this.$instrament = this.$el.find('[data-instrament]');
+      this.$modules = this.$el.find('[data-modules]');
 
       this.listenTo(trigger, 'note:on', this.createVoice);
       this.listenTo(trigger, 'note:off', this.offVoice);
@@ -33,20 +35,20 @@ define([
       return this;
     },
     start: function(options) {
-      this.setInstrament(options.instrament);
-      
-      this.setModules(options.modules);
-      
       if (options.analyser) {
         this.setAnalyser(options.analyser);
       }
+      
+      this.setInstrament(options.instrament);
+      
+      this.setModules(options.modules);
 
       this.createMaster();
     },
     setInstrament: function(Instrament) {
       this.instrament = new Instrament().render();
 
-      this.$interfaces.prepend(this.instrament.$el);
+      this.$instrament.append(this.instrament.$el);
 
       trigger.connectInstrament(this.instrament);
     },
@@ -60,7 +62,7 @@ define([
       // add master Volume
       analyser = new Analyser().render();
 
-      this.$interfaces.prepend(analyser.$el);
+      this.$analyser.append(analyser.$el);
 
       this.analyser = analyser.node;
     },
@@ -70,7 +72,7 @@ define([
       // add master Volume
       master = new Volume().render();
 
-      this.$interfaces.append(master.$el);
+      this.$modules.append(master.$el);
 
       this.master = new master.node();
 
@@ -91,7 +93,7 @@ define([
         connections: module.connections
       }).render();
 
-      this.$interfaces.append(view.render().$el);
+      this.$modules.append(view.render().$el);
 
       this.modules.add(_.extend(module, {
         view: view,
