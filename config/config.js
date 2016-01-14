@@ -6,7 +6,12 @@ module.exports = function() {
       config = {
         env: 'production',
         isProduction: true,
-        static: 'dist',
+        static: {
+          directory: 'dist',
+          options: {
+            maxAge: 31557600000
+          }
+        },
         requirejs: {
           main: '/javascripts/libraries/require/configs/build.js'
         }
@@ -17,7 +22,10 @@ module.exports = function() {
       config = {
         env: 'development',
         isProduction: false,
-        static: 'src',
+        static: {
+          directory: 'src',
+          options: {}
+        },
         requirejs: {
           main: '/javascripts/libraries/require/configs/dev.js'
         }
