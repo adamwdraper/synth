@@ -1,0 +1,25 @@
+// Variables -------------------------------------
+
+
+// Mixins --------------------------------------
+
+
+// Placeholders --------------------------------------
+
+
+// Styles --------------------------------------
+.ui-keyboard {
+
+  .table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .key {
+    @include square(2em);
+    background-color: $color-gray-lighterest;
+    border-radius: 100%;
+    border: 1px solid $color-gray-dark;
+    margin: auto;
+  }
+}
