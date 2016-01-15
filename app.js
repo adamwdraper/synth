@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var compression = require('compression')
+var compression = require('compression');
 
 var routes = require('./routes/index');
 
@@ -12,14 +12,14 @@ var app = express();
 app.locals.config = new Config();
 app.locals.assets = new Assets(app.locals.config);
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.use(compression());
 
 app.use(express.static(path.join(__dirname, app.locals.config.static.directory), app.locals.config.static.options));
 
-app.use('/', routes);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-app.use(compression());
+app.use('/', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

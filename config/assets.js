@@ -7,7 +7,7 @@ module.exports = function(config) {
       var versionedPath;
       
       // only change if we are getting files from dist
-      if (config.static !== 'dist') {
+      if (config.static.directory !== 'dist') {
         return path;
       }
 
