@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "a javascript synth",
   "engines": {
-    "node": "4.2.4"
+    "node": "6.11.1"
   },
   "dependencies": {
     "chai": "^3.4.1",
